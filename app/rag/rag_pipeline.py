@@ -14,12 +14,8 @@ from app.rag.vector_store import (
     VectorStore
 )
 
-from app.utils.azure_openai import (
-    client
-)
-
-from app.config.settings import (
-    AZURE_OPENAI_DEPLOYMENT
+from app.agents.crew_manager import (
+    FinancialCrew
 )
 
 
@@ -92,8 +88,16 @@ class FinancialRAG:
         query
     ):
 
+        print(
+            "Generating query embedding..."
+        )
+
         query_embedding = (
             generate_embedding(query)
+        )
+
+        print(
+            "Retrieving relevant chunks..."
         )
 
         retrieved_chunks = (
@@ -106,32 +110,15 @@ class FinancialRAG:
             retrieved_chunks
         )
 
-        prompt = f"""
-        You are an expert financial analyst AI.
-
-        Answer only from provided context.
-
-        Context:
-        {context}
-
-        Question:
-        {query}
-
-        Give professional financial insights.
-        """
-
-        response = (
-            client.chat.completions.create(
-                model=AZURE_OPENAI_DEPLOYMENT,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ]
-            )
+        print(
+            "Running multi-agent analysis..."
         )
 
-        return response.choices[
-            0
-        ].message.content
+        crew = FinancialCrew()
+
+        result = crew.run_analysis(
+            context,
+            query
+        )
+
+        return result
