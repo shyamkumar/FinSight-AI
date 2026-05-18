@@ -489,6 +489,20 @@ IIT Bombay – AI/ML in Practice
 
 ---
 
+
+--- Deployment Update
+
+# 🚀 AFTER UPDATING
+
+Run:
+
+```bash id="’wini253"
+git add README.md
+
+git commit -m "Updated README and triggered deployment"
+
+git push origin main
+
 # 📜 License
 
 This project is developed for educational and research purposes.
