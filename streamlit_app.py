@@ -173,7 +173,7 @@ with st.sidebar:
             ):
 
                 response = (
-                    st.session_state.rag.ask(query)
+                    st.session_state.rag.ask_question(query)
                 )
 
             st.session_state.chat_history.append(
