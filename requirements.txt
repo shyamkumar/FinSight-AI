@@ -15,3 +15,4 @@ requests
 reportlab
 PyMuPDF
 tiktoken
+langchain-core
