@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+streamlit
+openai
+langchain
+langchain-community
+langchain-openai
+faiss-cpu
+pymupdf
+python-dotenv
+crewai
+tiktoken
+pandas
+numpy
+azure-search-documents
+azure-storage-blob
