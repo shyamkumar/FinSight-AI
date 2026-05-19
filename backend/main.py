@@ -10,6 +10,7 @@ from backend.rag.pdf_extractor import extract_pdf_text
 from backend.rag.chunking import chunk_text
 from backend.rag.embeddings import create_embeddings
 from backend.rag.azure_search import create_search_index
+from backend.rag.azure_search import upload_documents
 
 app = FastAPI()
 
@@ -74,12 +75,14 @@ async def upload_report(file: UploadFile = File(...)):
     extracted_text = extract_pdf_text(file_location)
     chunks = chunk_text(extracted_text)
     embeddings = create_embeddings(chunks[:5])
+    upload_documents(embeddings)
 
     return {
     "filename": file.filename,
     "text_length": len(extracted_text),
     "total_chunks": len(chunks),
     "embeddings_created": len(embeddings),
+    "uploaded_to_azure_search": True,
     "first_chunk_preview": chunks[0]
 }
 

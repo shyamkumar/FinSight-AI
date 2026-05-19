@@ -54,7 +54,7 @@ def create_search_index():
                 SearchFieldDataType.Single
             ),
             searchable=True,
-            vector_search_dimensions=1536,
+            vector_search_dimensions=3072,
             vector_search_profile_name="my-vector-profile"
         )
     ]
@@ -84,3 +84,27 @@ def create_search_index():
     client.create_or_update_index(index)
 
     return "Index created successfully"
+from azure.search.documents import SearchClient
+
+search_client = SearchClient(
+    endpoint=endpoint,
+    index_name=index_name,
+    credential=credential
+)
+
+
+def upload_documents(embeddings):
+
+    documents = []
+
+    for idx, item in enumerate(embeddings):
+
+        documents.append({
+            "id": str(idx),
+            "content": item["text"],
+            "embedding": item["embedding"]
+        })
+
+    result = search_client.upload_documents(documents)
+
+    return result
