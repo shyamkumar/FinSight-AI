@@ -9,6 +9,7 @@ from app.utils.pdf_generator import generate_pdf_report
 from app.boardroom.boardroom_agents import BoardroomAgents
 from app.simulations.whatif_simulator import WhatIfSimulator
 from app.debate.debate_agents import DebateAgents
+from app.utils.ppt_generator import generate_ppt_report
 
 # ============================================================
 # PAGE CONFIG
@@ -903,6 +904,68 @@ if st.button("🧠 Run AI Debate"):
             expanded=True
         ):
             st.write(moderator_output)
+
+st.markdown('</div>', unsafe_allow_html=True)
+# ============================================================
+# GENERATE INVESTOR PRESENTATION
+# ============================================================
+
+st.markdown('<div class="card">', unsafe_allow_html=True)
+
+st.subheader("📊 AI Investor Presentation Generator")
+
+if st.button("🚀 Generate Investor PPT"):
+
+    if len(st.session_state.chat_history) == 0:
+
+        st.warning(
+            "Generate AI analysis first."
+        )
+
+    else:
+
+        latest_chat = (
+            st.session_state.chat_history[-1]
+        )
+
+        with st.spinner(
+            "Generating AI Investor Presentation..."
+        ):
+
+            generate_ppt_report(
+
+                company=company_name,
+
+                summary=latest_chat["response"],
+
+                risk="AI-detected business and operational risks.",
+
+                investment="Bullish and bearish investment analysis.",
+
+                strategy="Strategic AI and market expansion recommendations.",
+
+                output_path="financial_presentation.pptx"
+            )
+
+        st.success(
+            "✅ Investor Presentation Generated"
+        )
+
+        with open(
+            "financial_presentation.pptx",
+            "rb"
+        ) as ppt_file:
+
+            st.download_button(
+
+                label="📥 Download Investor PPT",
+
+                data=ppt_file,
+
+                file_name="financial_presentation.pptx",
+
+                mime="application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            )
 
 st.markdown('</div>', unsafe_allow_html=True)
 

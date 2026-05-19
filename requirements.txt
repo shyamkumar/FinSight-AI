@@ -16,3 +16,4 @@ reportlab
 PyMuPDF
 tiktoken
 langchain-core
+python-pptx
