@@ -11,6 +11,7 @@ from backend.rag.chunking import chunk_text
 from backend.rag.embeddings import create_embeddings
 from backend.rag.azure_search import create_search_index
 from backend.rag.azure_search import upload_documents
+from backend.rag.retrieval import retrieve_relevant_chunks
 
 app = FastAPI()
 
@@ -74,7 +75,7 @@ async def upload_report(file: UploadFile = File(...)):
         f.write(await file.read())
     extracted_text = extract_pdf_text(file_location)
     chunks = chunk_text(extracted_text)
-    embeddings = create_embeddings(chunks[:5])
+    embeddings = create_embeddings(chunks[:50])
     upload_documents(embeddings)
 
     return {
@@ -93,4 +94,13 @@ def create_index():
 
     return {
         "message": result
+    }
+@app.get("/rag-search")
+def rag_search(query: str):
+
+    chunks = retrieve_relevant_chunks(query)
+
+    return {
+        "query": query,
+        "retrieved_chunks": chunks
     }
