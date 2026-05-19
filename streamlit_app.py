@@ -675,21 +675,68 @@ if stock_ticker:
 
         st.markdown('</div>', unsafe_allow_html=True)
 # ============================================================
+# EMPTY STATE BEFORE PDF UPLOAD
+# ============================================================
+
+if not st.session_state.pdf_processed:
+
+    st.info(
+        "📄 Upload a financial report to unlock "
+        "AI-powered financial analysis dashboard."
+    )
+
+    st.markdown("---")
+
+    st.subheader(
+        "🚀 Available AI Features"
+    )
+
+    feature1, feature2 = st.columns(2)
+
+    with feature1:
+
+        st.markdown("""
+### 📈 Financial Intelligence
+- Executive AI Analysis
+- Market Sentiment
+- Risk Assessment
+- Growth Opportunity Detection
+- KPI Dashboard
+""")
+
+    with feature2:
+
+        st.markdown("""
+### 🤖 Multi-Agent AI
+- Boardroom Simulation
+- Bull vs Bear Debate
+- What-If Scenarios
+- Investor PPT Generator
+- Explainable AI Citations
+""")
+
+    st.stop()
+# ============================================================
 # REAL-TIME MARKET SENTIMENT
 # ============================================================
 
-st.markdown("---")
-
-st.subheader(
-    "📈 Real-Time AI Market Sentiment"
+stock_ticker = st.session_state.get(
+    "stock_ticker",
+    None
 )
 
-stock_ticker = st.text_input(
-    "Enter Stock Ticker",
-    value="TSLA"
-)
+if (
+    st.session_state.pdf_processed
+    and stock_ticker
+):
 
-if stock_ticker:
+    st.subheader(
+        "📈 Real-Time AI Market Sentiment"
+    )
+
+    st.success(
+        f"📌 Detected Stock: {stock_ticker}"
+    )
 
     analyzer = MarketSentimentAnalyzer()
 
@@ -795,31 +842,41 @@ if stock_ticker:
 
     c1, c2 = st.columns(2)
 
-    with c1:
+    c1, c2 = st.columns(2)
 
-        st.markdown('<div class="card">', unsafe_allow_html=True)
+with c1:
 
-        st.subheader("📈 Stock Price Trend")
+    st.markdown(
+        '<div class="card">',
+        unsafe_allow_html=True
+    )
 
-        hist = stock.history(period="1y")
+    st.subheader(
+        "📈 Stock Price Trend"
+    )
 
-        fig = px.line(
-            hist,
-            x=hist.index,
-            y="Close"
-        )
+    # ============================================
+    # USE SENTIMENT DATA HISTORY
+    # ============================================
 
-        fig.update_layout(
-            template="plotly_white",
-            height=350
-        )
+    hist = sentiment_data["history"]
 
-        st.plotly_chart(
-            fig,
-            use_container_width=True
-        )
+    fig = px.line(
+        hist,
+        x=hist.index,
+        y="Close",
+        title=f"{stock_ticker} Stock Performance"
+    )
 
-        st.markdown('</div>', unsafe_allow_html=True)
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
+
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
 
     with c2:
 
