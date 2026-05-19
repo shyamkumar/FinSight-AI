@@ -16,7 +16,11 @@ client = AzureOpenAI(
 deployment_name = os.getenv("AZURE_OPENAI_DEPLOYMENT")
 
 
-def generate_stock_analysis(stock_data, news_data):
+def generate_stock_analysis(
+    stock_data,
+    news_data,
+    financial_ratios
+):
 
     prompt = f"""
     You are a senior financial analyst.
@@ -25,6 +29,9 @@ def generate_stock_analysis(stock_data, news_data):
 
     Stock Information:
     {stock_data}
+    
+    Financial Ratios:
+    {financial_ratios}
 
     Latest News:
     {news_data}

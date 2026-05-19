@@ -34,3 +34,20 @@ def get_stock_news(ticker: str):
         })
 
     return latest_news
+def get_financial_ratios(ticker: str):
+
+    stock = yf.Ticker(ticker)
+
+    info = stock.info
+
+    return {
+        "ticker": ticker.upper(),
+        "pe_ratio": info.get("trailingPE"),
+        "forward_pe": info.get("forwardPE"),
+        "eps": info.get("trailingEps"),
+        "revenue_growth": info.get("revenueGrowth"),
+        "profit_margin": info.get("profitMargins"),
+        "debt_to_equity": info.get("debtToEquity"),
+        "return_on_equity": info.get("returnOnEquity"),
+        "current_ratio": info.get("currentRatio")
+    }
