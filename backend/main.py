@@ -12,6 +12,7 @@ from backend.rag.embeddings import create_embeddings
 from backend.rag.azure_search import create_search_index
 from backend.rag.azure_search import upload_documents
 from backend.rag.retrieval import retrieve_relevant_chunks
+from backend.rag.rag_qa import generate_rag_answer
 
 app = FastAPI()
 
@@ -104,3 +105,10 @@ def rag_search(query: str):
         "query": query,
         "retrieved_chunks": chunks
     }
+
+@app.get("/rag-qa")
+def rag_qa(query: str):
+
+    result = generate_rag_answer(query)
+
+    return result
