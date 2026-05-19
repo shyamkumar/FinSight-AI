@@ -4,6 +4,9 @@ from backend.agents.research_agent import research_stock
 
 from backend.agents.report_agent import generate_report
 from backend.graph.workflow import financial_workflow
+from fastapi import UploadFile, File
+
+from backend.rag.pdf_extractor import extract_pdf_text
 
 app = FastAPI()
 
@@ -56,3 +59,20 @@ def financial_ratios(ticker: str):
     result = get_financial_ratios(ticker)
 
     return result
+
+@app.post("/upload-report")
+async def upload_report(file: UploadFile = File(...)):
+
+    file_location = f"uploaded_{file.filename}"
+
+    with open(file_location, "wb") as f:
+
+        f.write(await file.read())
+
+    extracted_text = extract_pdf_text(file_location)
+
+    return {
+        "filename": file.filename,
+        "text_length": len(extracted_text),
+        "preview": extracted_text[:1000]
+    }
