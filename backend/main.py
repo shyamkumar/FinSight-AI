@@ -9,6 +9,7 @@ from fastapi import UploadFile, File
 from backend.rag.pdf_extractor import extract_pdf_text
 from backend.rag.chunking import chunk_text
 from backend.rag.embeddings import create_embeddings
+from backend.rag.azure_search import create_search_index
 
 app = FastAPI()
 
@@ -81,3 +82,12 @@ async def upload_report(file: UploadFile = File(...)):
     "embeddings_created": len(embeddings),
     "first_chunk_preview": chunks[0]
 }
+
+@app.get("/create-index")
+def create_index():
+
+    result = create_search_index()
+
+    return {
+        "message": result
+    }
