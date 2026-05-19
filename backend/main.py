@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from backend.tools.finance_tools import get_stock_price
+from backend.tools.finance_tools import get_stock_info
 
 app = FastAPI()
 
@@ -21,8 +21,8 @@ def health():
 
 
 @app.get("/stock/{ticker}")
-def stock_price(ticker: str):
+def stock_info(ticker: str):
 
-    result = get_stock_price(ticker)
+    result = get_stock_info(ticker)
 
     return result

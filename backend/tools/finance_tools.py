@@ -1,15 +1,19 @@
 import yfinance as yf
 
 
-def get_stock_price(ticker: str):
+def get_stock_info(ticker: str):
 
     stock = yf.Ticker(ticker)
 
-    data = stock.history(period="1d")
+    info = stock.info
 
-    latest_price = data["Close"].iloc[-1]
+    current_price = info.get("currentPrice")
 
     return {
         "ticker": ticker.upper(),
-        "price": round(latest_price, 2)
+        "company": info.get("longName"),
+        "sector": info.get("sector"),
+        "industry": info.get("industry"),
+        "market_cap": info.get("marketCap"),
+        "current_price": current_price
     }
