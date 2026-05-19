@@ -10,6 +10,8 @@ from app.boardroom.boardroom_agents import BoardroomAgents
 from app.simulations.whatif_simulator import WhatIfSimulator
 from app.debate.debate_agents import DebateAgents
 from app.utils.ppt_generator import generate_ppt_report
+from app.analytics.market_sentiment import MarketSentimentAnalyzer
+
 
 # ============================================================
 # PAGE CONFIG
@@ -625,6 +627,82 @@ if stock_ticker:
         )
 
         st.markdown('</div>', unsafe_allow_html=True)
+        # ============================================================
+# REAL-TIME MARKET SENTIMENT
+# ============================================================
+
+if stock_ticker:
+
+    analyzer = MarketSentimentAnalyzer()
+
+    sentiment_data = analyzer.analyze(
+        stock_ticker
+    )
+
+    st.markdown(
+        '<div class="card">',
+        unsafe_allow_html=True
+    )
+
+    st.subheader(
+        "📈 Real-Time AI Market Sentiment"
+    )
+
+    s1, s2, s3 = st.columns(3)
+
+    with s1:
+
+        st.metric(
+            "Market Sentiment",
+            sentiment_data["sentiment"]
+        )
+
+    with s2:
+
+        st.metric(
+            "AI Confidence",
+            f'{sentiment_data["confidence"]}%'
+        )
+
+    with s3:
+
+        st.metric(
+            "1 Month Stock Change",
+            f'{sentiment_data["price_change"]}%'
+        )
+
+    # ============================================
+    # AI INTERPRETATION
+    # ============================================
+
+    if sentiment_data["sentiment"] == "Strong Bullish":
+
+        st.success(
+            "🚀 Strong positive market momentum detected."
+        )
+
+    elif sentiment_data["sentiment"] == "Bullish":
+
+        st.info(
+            "📈 Positive investor sentiment observed."
+        )
+
+    elif sentiment_data["sentiment"] == "Bearish":
+
+        st.warning(
+            "⚠️ Market uncertainty increasing."
+        )
+
+    else:
+
+        st.error(
+            "🔴 High market risk and volatility detected."
+        )
+
+    st.markdown(
+        '</div>',
+        unsafe_allow_html=True
+    )
 
 # ============================================================
 # CHARTS
