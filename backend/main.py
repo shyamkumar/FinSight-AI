@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from backend.agents.research_agent import research_stock
 
 from backend.agents.report_agent import generate_report
+from backend.graph.workflow import financial_workflow
 
 app = FastAPI()
 
@@ -40,17 +41,13 @@ def stock_news(ticker: str):
 @app.get("/analyze/{ticker}")
 def analyze_stock(ticker: str):
 
-    research_data = research_stock(ticker)
-
-    analysis = generate_report(
-        research_data["stock_info"],
-        research_data["news"],
-        research_data["financial_ratios"]
-    )
+    result = financial_workflow.invoke({
+        "ticker": ticker
+    })
 
     return {
         "ticker": ticker,
-        "analysis": analysis
+        "analysis": result["analysis"]
     }
 
 @app.get("/ratios/{ticker}")
