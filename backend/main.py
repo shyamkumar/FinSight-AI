@@ -3,6 +3,7 @@ from backend.tools.finance_tools import (
     get_stock_info,
     get_stock_news
 )
+from backend.tools.ai_tools import generate_stock_analysis
 
 app = FastAPI()
 
@@ -36,3 +37,20 @@ def stock_news(ticker: str):
     result = get_stock_news(ticker)
 
     return result
+
+@app.get("/analyze/{ticker}")
+def analyze_stock(ticker: str):
+
+    stock_data = get_stock_info(ticker)
+
+    news_data = get_stock_news(ticker)
+
+    analysis = generate_stock_analysis(
+        stock_data,
+        news_data
+    )
+
+    return {
+        "ticker": ticker,
+        "analysis": analysis
+    }
