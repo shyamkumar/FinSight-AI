@@ -98,14 +98,22 @@ class FinancialRAG:
         if self.vectorstore is None:
             return "Please upload and process a PDF first."
 
-        docs = self.vectorstore.similarity_search(
-            question,
-            k=4
+        docs = self.vectorstore.similarity_search_with_score(
+        question,
+        k=4
         )
 
-        context = "\n\n".join(
-            [doc.page_content for doc in docs]
-        )
+        context = ""
+
+        sources = []
+
+        for i, (doc, score) in enumerate(docs):
+
+           context += f"\n\n{doc.page_content}"
+
+           sources.append(
+              f"Source Chunk {i+1} | Similarity Score: {round(score, 2)}"
+          )
 
         prompt = f"""
 You are an expert Financial Research AI Assistant.
@@ -130,4 +138,14 @@ Provide:
             [HumanMessage(content=prompt)]
         )
 
-        return response.content
+        final_response = f"""
+        {response.content}
+
+        ---
+
+        ## 📚 AI Source References
+
+       {chr(10).join(sources)}
+       """
+
+       return final_response
