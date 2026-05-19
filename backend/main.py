@@ -7,6 +7,7 @@ from backend.graph.workflow import financial_workflow
 from fastapi import UploadFile, File
 
 from backend.rag.pdf_extractor import extract_pdf_text
+from backend.rag.chunking import chunk_text
 
 app = FastAPI()
 
@@ -68,11 +69,12 @@ async def upload_report(file: UploadFile = File(...)):
     with open(file_location, "wb") as f:
 
         f.write(await file.read())
-
     extracted_text = extract_pdf_text(file_location)
+    chunks = chunk_text(extracted_text)
 
     return {
-        "filename": file.filename,
-        "text_length": len(extracted_text),
-        "preview": extracted_text[:1000]
-    }
+    "filename": file.filename,
+    "text_length": len(extracted_text),
+    "total_chunks": len(chunks),
+    "first_chunk_preview": chunks[0]
+}
