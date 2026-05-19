@@ -18,7 +18,9 @@ deployment_name = os.getenv("AZURE_OPENAI_DEPLOYMENT")
 def generate_stock_analysis(stock_data, news_data):
 
     prompt = f"""
-    Analyze this company for investment purposes.
+    You are a senior financial analyst.
+
+    Analyze the following stock data and latest news.
 
     Stock Information:
     {stock_data}
@@ -26,11 +28,25 @@ def generate_stock_analysis(stock_data, news_data):
     Latest News:
     {news_data}
 
-    Provide:
-    1. Company overview
-    2. Growth opportunities
-    3. Risks
-    4. Overall investment insight
+    Provide response in this format:
+
+    ## Company Overview
+
+    ## Bullish Factors
+
+    ## Bearish Factors
+
+    ## Risk Analysis
+
+    ## Long-Term Outlook
+
+    ## Investment Recommendation
+    Choose one:
+    - Buy
+    - Hold
+    - Sell
+
+    Explain reasoning clearly.
     """
 
     response = client.chat.completions.create(
