@@ -51,3 +51,13 @@ def get_financial_ratios(ticker: str):
         "return_on_equity": info.get("returnOnEquity"),
         "current_ratio": info.get("currentRatio")
     }
+
+def get_stock_chart_data(ticker):
+
+    stock = yf.Ticker(ticker)
+
+    history = stock.history(period="6mo")
+
+    history.reset_index(inplace=True)
+
+    return history.to_dict(orient="records")

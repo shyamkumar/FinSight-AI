@@ -13,9 +13,46 @@ from backend.rag.azure_search import create_search_index
 from backend.rag.azure_search import upload_documents
 from backend.rag.retrieval import retrieve_relevant_chunks
 from backend.rag.rag_qa import generate_rag_answer
+from backend.tools.finance_tools import (
+    get_stock_chart_data
+)
+from pydantic import BaseModel
+
+from backend.tools.finance_tools import (
+    get_stock_info,
+    get_financial_ratios
+)
+
+from backend.tools.ai_tools import (
+    generate_stock_analysis
+)
+from backend.tools.blob_tools import (
+    upload_pdf_to_blob
+)
+
+class StockRequest(BaseModel):
+    ticker: str
 
 app = FastAPI()
 
+
+@app.post("/analyze")
+def analyze_stock(request: StockRequest):
+
+    stock_data = get_stock_info(request.ticker)
+
+    ratios = get_financial_ratios(request.ticker)
+
+    analysis = generate_stock_analysis(
+        request.ticker,
+        stock_data,
+        ratios
+    )
+
+    return {
+        "ticker": request.ticker,
+        "analysis": analysis
+    }
 
 @app.get("/")
 def home():
@@ -69,24 +106,81 @@ def financial_ratios(ticker: str):
 @app.post("/upload-report")
 async def upload_report(file: UploadFile = File(...)):
 
+    # ======================================
+    # SAVE FILE LOCALLY TEMPORARILY
+    # ======================================
+
     file_location = f"uploaded_{file.filename}"
+
+    file_content = await file.read()
 
     with open(file_location, "wb") as f:
 
-        f.write(await file.read())
-    extracted_text = extract_pdf_text(file_location)
-    chunks = chunk_text(extracted_text)
-    embeddings = create_embeddings(chunks[:50])
-    upload_documents(embeddings)
+        f.write(file_content)
+
+    # ======================================
+    # UPLOAD TO AZURE BLOB STORAGE
+    # ======================================
+
+    blob_url = upload_pdf_to_blob(
+        file.filename,
+        file_content
+    )
+
+    # ======================================
+    # EXTRACT PDF TEXT
+    # ======================================
+
+    extracted_text = extract_pdf_text(
+        file_location
+    )
+
+    # ======================================
+    # CHUNKING
+    # ======================================
+
+    chunks = chunk_text(
+        extracted_text
+    )
+
+    # ======================================
+    # CREATE EMBEDDINGS
+    # ======================================
+
+    embeddings = create_embeddings(
+        chunks[:50]
+    )
+
+    # ======================================
+    # UPLOAD TO AZURE AI SEARCH
+    # ======================================
+
+    upload_documents(
+        embeddings
+    )
+
+    # ======================================
+    # RESPONSE
+    # ======================================
 
     return {
-    "filename": file.filename,
-    "text_length": len(extracted_text),
-    "total_chunks": len(chunks),
-    "embeddings_created": len(embeddings),
-    "uploaded_to_azure_search": True,
-    "first_chunk_preview": chunks[0]
-}
+
+        "filename": file.filename,
+
+        "blob_url": blob_url,
+
+        "text_length": len(extracted_text),
+
+        "total_chunks": len(chunks),
+
+        "embeddings_created": len(embeddings),
+
+        "uploaded_to_azure_search": True,
+
+        "uploaded_to_blob_storage": True,
+
+        "first_chunk_preview": chunks[0]
+    }
 
 @app.get("/create-index")
 def create_index():
@@ -112,3 +206,10 @@ def rag_qa(query: str):
     result = generate_rag_answer(query)
 
     return result
+
+@app.get("/stock-chart/{ticker}")
+def stock_chart(ticker: str):
+
+    data = get_stock_chart_data(ticker)
+
+    return data
