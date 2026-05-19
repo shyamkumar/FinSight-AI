@@ -8,6 +8,7 @@ from app.rag.rag_pipeline import FinancialRAG
 from app.utils.pdf_generator import generate_pdf_report
 from app.boardroom.boardroom_agents import BoardroomAgents
 from app.simulations.whatif_simulator import WhatIfSimulator
+from app.debate.debate_agents import DebateAgents
 
 # ============================================================
 # PAGE CONFIG
@@ -826,6 +827,82 @@ if st.button("🧠 Run Financial Simulation"):
         ):
 
             st.write(simulation_output)
+
+st.markdown('</div>', unsafe_allow_html=True)
+# ============================================================
+# AI BULL VS BEAR DEBATE
+# ============================================================
+
+st.markdown('<div class="card">', unsafe_allow_html=True)
+
+st.subheader("⚔️ AI Bull vs Bear Investment Debate")
+
+debate_query = st.text_input(
+    "Enter Investment Debate Topic",
+    value="Is Tesla a good long-term investment?"
+)
+
+if st.button("🧠 Run AI Debate"):
+
+    if not st.session_state.pdf_processed:
+
+        st.warning(
+            "Please upload financial PDF first."
+        )
+
+    else:
+
+        debate = DebateAgents(
+            st.session_state.rag
+        )
+
+        with st.spinner(
+            "Running AI Financial Debate..."
+        ):
+
+            bull_output = (
+                debate.bull_agent(debate_query)
+            )
+
+            bear_output = (
+                debate.bear_agent(debate_query)
+            )
+
+            risk_output = (
+                debate.risk_agent(debate_query)
+            )
+
+            moderator_output = (
+                debate.moderator_agent(debate_query)
+            )
+
+        st.success(
+            "✅ AI Debate Completed"
+        )
+
+        with st.expander(
+            "🟢 Bull Agent",
+            expanded=False
+        ):
+            st.write(bull_output)
+
+        with st.expander(
+            "🔴 Bear Agent",
+            expanded=False
+        ):
+            st.write(bear_output)
+
+        with st.expander(
+            "⚠️ Risk Agent",
+            expanded=False
+        ):
+            st.write(risk_output)
+
+        with st.expander(
+            "👔 Moderator Agent",
+            expanded=True
+        ):
+            st.write(moderator_output)
 
 st.markdown('</div>', unsafe_allow_html=True)
 
