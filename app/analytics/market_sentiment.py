@@ -1,4 +1,5 @@
 import yfinance as yf
+import pandas as pd
 
 
 class MarketSentimentAnalyzer:
@@ -10,11 +11,23 @@ class MarketSentimentAnalyzer:
 
         stock = yf.Ticker(ticker)
 
-        hist = stock.history(period="1mo")
+        hist = stock.history(period="3mo")
+
+        if hist.empty:
+
+            return None
 
         current_price = hist["Close"].iloc[-1]
 
         previous_price = hist["Close"].iloc[0]
+
+        high_price = hist["High"].max()
+
+        low_price = hist["Low"].min()
+
+        avg_volume = hist["Volume"].mean()
+
+        volatility = hist["Close"].pct_change().std() * 100
 
         price_change = (
             (
@@ -22,33 +35,49 @@ class MarketSentimentAnalyzer:
             ) / previous_price
         ) * 100
 
-        # ============================================
-        # MARKET SENTIMENT
-        # ============================================
+        # ====================================================
+        # MARKET SENTIMENT LOGIC
+        # ====================================================
 
-        if price_change > 10:
+        if price_change > 20:
 
             sentiment = "Strong Bullish"
 
-            confidence = 92
+            confidence = 94
 
-        elif price_change > 0:
+            signal = "🚀 Strong growth momentum"
+
+        elif price_change > 5:
 
             sentiment = "Bullish"
 
-            confidence = 81
+            confidence = 84
 
-        elif price_change > -10:
+            signal = "📈 Positive investor sentiment"
+
+        elif price_change > -5:
+
+            sentiment = "Neutral"
+
+            confidence = 72
+
+            signal = "⚖️ Stable market behavior"
+
+        elif price_change > -20:
 
             sentiment = "Bearish"
 
-            confidence = 68
+            confidence = 64
+
+            signal = "⚠️ Investor uncertainty rising"
 
         else:
 
             sentiment = "Strong Bearish"
 
-            confidence = 55
+            confidence = 52
+
+            signal = "🔴 High market pressure"
 
         return {
 
@@ -56,5 +85,19 @@ class MarketSentimentAnalyzer:
 
             "confidence": confidence,
 
-            "price_change": round(price_change, 2)
+            "signal": signal,
+
+            "price_change": round(price_change, 2),
+
+            "current_price": round(current_price, 2),
+
+            "high_price": round(high_price, 2),
+
+            "low_price": round(low_price, 2),
+
+            "avg_volume": int(avg_volume),
+
+            "volatility": round(volatility, 2),
+
+            "history": hist
         }

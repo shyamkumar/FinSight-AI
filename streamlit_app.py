@@ -39,6 +39,9 @@ if "chat_history" not in st.session_state:
 if "uploaded_filename" not in st.session_state:
     st.session_state.uploaded_filename = None
 
+if "pdf_path" not in st.session_state:
+    st.session_state.pdf_path = None
+
 # ============================================================
 # CUSTOM CSS
 # ============================================================
@@ -164,7 +167,59 @@ with st.sidebar:
         value=selected_question
     )
 
-    # ============================================================
+# ============================================================
+# PROCESS PDF
+# ============================================================
+
+if uploaded_file is not None:
+
+    os.makedirs(
+        "temp",
+        exist_ok=True
+    )
+
+    # ============================================
+    # PROCESS ONLY IF NEW FILE
+    # ============================================
+
+    if (
+        st.session_state.uploaded_filename
+        != uploaded_file.name
+    ):
+
+        st.session_state.uploaded_filename = (
+            uploaded_file.name
+        )
+
+        pdf_path = os.path.join(
+            "temp",
+            uploaded_file.name
+        )
+
+        with open(pdf_path, "wb") as f:
+
+            f.write(
+                uploaded_file.getbuffer()
+            )
+
+        st.session_state.pdf_path = pdf_path
+
+        with st.spinner(
+            "Processing Financial Report..."
+        ):
+
+            rag = FinancialRAG()
+
+            rag.ingest_pdf(pdf_path)
+
+            st.session_state.rag = rag
+
+            st.session_state.pdf_processed = True
+
+        st.success(
+            "✅ Financial Report Processed Successfully"
+        )
+# ============================================================
 # AI ANALYSIS BUTTON
 # ============================================================
 
@@ -413,47 +468,6 @@ if st.button("🚀 Generate AI Analysis"):
         )
 
 # ============================================================
-# PROCESS PDF
-# ============================================================
-
-if uploaded_file is not None:
-
-    st.session_state.uploaded_filename = (
-        uploaded_file.name
-    )
-
-    if not st.session_state.pdf_processed:
-
-        os.makedirs(
-            "temp",
-            exist_ok=True
-        )
-
-        pdf_path = os.path.join(
-            "temp",
-            uploaded_file.name
-        )
-
-        with open(pdf_path, "wb") as f:
-            f.write(uploaded_file.read())
-
-        with st.spinner(
-            "Processing Financial Report..."
-        ):
-
-            rag = FinancialRAG()
-
-            rag.ingest_pdf(pdf_path)
-
-            st.session_state.rag = rag
-
-            st.session_state.pdf_processed = True
-
-        st.success(
-            "✅ Financial Report Processed Successfully"
-        )
-
-# ============================================================
 # AUTO DETECT STOCK TICKER
 # ============================================================
 
@@ -627,9 +641,20 @@ if stock_ticker:
         )
 
         st.markdown('</div>', unsafe_allow_html=True)
-        # ============================================================
+# ============================================================
 # REAL-TIME MARKET SENTIMENT
 # ============================================================
+
+st.markdown("---")
+
+st.subheader(
+    "📈 Real-Time AI Market Sentiment"
+)
+
+stock_ticker = st.text_input(
+    "Enter Stock Ticker",
+    value="TSLA"
+)
 
 if stock_ticker:
 
@@ -639,71 +664,96 @@ if stock_ticker:
         stock_ticker
     )
 
-    st.markdown(
-        '<div class="card">',
-        unsafe_allow_html=True
-    )
+    if sentiment_data is not None:
 
-    st.subheader(
-        "📈 Real-Time AI Market Sentiment"
-    )
+        # ====================================================
+        # METRICS
+        # ====================================================
 
-    s1, s2, s3 = st.columns(3)
+        c1, c2, c3, c4 = st.columns(4)
 
-    with s1:
+        with c1:
 
-        st.metric(
-            "Market Sentiment",
-            sentiment_data["sentiment"]
-        )
+            st.metric(
+                "Market Sentiment",
+                sentiment_data["sentiment"]
+            )
 
-    with s2:
+        with c2:
 
-        st.metric(
-            "AI Confidence",
-            f'{sentiment_data["confidence"]}%'
-        )
+            st.metric(
+                "AI Confidence",
+                f'{sentiment_data["confidence"]}%'
+            )
 
-    with s3:
+        with c3:
 
-        st.metric(
-            "1 Month Stock Change",
-            f'{sentiment_data["price_change"]}%'
-        )
+            st.metric(
+                "Stock Change",
+                f'{sentiment_data["price_change"]}%'
+            )
 
-    # ============================================
-    # AI INTERPRETATION
-    # ============================================
+        with c4:
 
-    if sentiment_data["sentiment"] == "Strong Bullish":
+            st.metric(
+                "Current Price",
+                f'${sentiment_data["current_price"]}'
+            )
 
-        st.success(
-            "🚀 Strong positive market momentum detected."
-        )
-
-    elif sentiment_data["sentiment"] == "Bullish":
+        # ====================================================
+        # SIGNAL MESSAGE
+        # ====================================================
 
         st.info(
-            "📈 Positive investor sentiment observed."
+            sentiment_data["signal"]
         )
 
-    elif sentiment_data["sentiment"] == "Bearish":
+        # ====================================================
+        # EXTRA MARKET INSIGHTS
+        # ====================================================
 
-        st.warning(
-            "⚠️ Market uncertainty increasing."
+        e1, e2, e3 = st.columns(3)
+
+        with e1:
+
+            st.metric(
+                "3M High",
+                f'${sentiment_data["high_price"]}'
+            )
+
+        with e2:
+
+            st.metric(
+                "3M Low",
+                f'${sentiment_data["low_price"]}'
+            )
+
+        with e3:
+
+            st.metric(
+                "Volatility",
+                f'{sentiment_data["volatility"]}%'
+            )
+
+        # ====================================================
+        # STOCK PRICE CHART
+        # ====================================================
+
+        st.subheader(
+            "📊 Stock Performance Trend"
         )
+
+        chart_data = sentiment_data[
+            "history"
+        ][["Close"]]
+
+        st.line_chart(chart_data)
 
     else:
 
         st.error(
-            "🔴 High market risk and volatility detected."
+            "Unable to fetch stock market data."
         )
-
-    st.markdown(
-        '</div>',
-        unsafe_allow_html=True
-    )
-
 # ============================================================
 # CHARTS
 # ============================================================
