@@ -1,4 +1,5 @@
 import os
+import json
 
 from openai import AzureOpenAI
 from dotenv import load_dotenv
@@ -20,7 +21,7 @@ def generate_stock_analysis(stock_data, news_data):
     prompt = f"""
     You are a senior financial analyst.
 
-    Analyze the following stock data and latest news.
+    Analyze the following stock information.
 
     Stock Information:
     {stock_data}
@@ -28,26 +29,19 @@ def generate_stock_analysis(stock_data, news_data):
     Latest News:
     {news_data}
 
-    Provide response in this format:
+    Return ONLY valid JSON.
 
-    ## Company Overview
+   Format:
 
-    ## Bullish Factors
-
-    ## Bearish Factors
-
-    ## Risk Analysis
-
-    ## Long-Term Outlook
-
-    ## Investment Recommendation
-    Choose one:
-    - Buy
-    - Hold
-    - Sell
-
-    Explain reasoning clearly.
-    """
+   {{
+     "company_overview": "",
+     "bullish_factors": [],
+     "bearish_factors": [],
+     "risk_analysis": "",
+     "long_term_outlook": "",
+     "recommendation": ""
+  }}
+  """
 
     response = client.chat.completions.create(
         model=deployment_name,
@@ -60,4 +54,10 @@ def generate_stock_analysis(stock_data, news_data):
         temperature=0.3
     )
 
-    return response.choices[0].message.content
+    content = response.choices[0].message.content
+
+    content = content.replace("```json", "")
+    content = content.replace("```", "")
+    content = content.strip()
+
+    return json.loads(content)
