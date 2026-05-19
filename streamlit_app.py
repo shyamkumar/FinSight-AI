@@ -7,6 +7,7 @@ import os
 from app.rag.rag_pipeline import FinancialRAG
 from app.utils.pdf_generator import generate_pdf_report
 from app.boardroom.boardroom_agents import BoardroomAgents
+from app.simulations.whatif_simulator import WhatIfSimulator
 
 # ============================================================
 # PAGE CONFIG
@@ -760,6 +761,71 @@ else:
             f'<div class="bot-msg">🤖 {chat["response"]}</div>',
             unsafe_allow_html=True
         )
+
+st.markdown('</div>', unsafe_allow_html=True)
+# ============================================================
+# WHAT-IF SIMULATION ENGINE
+# ============================================================
+
+st.markdown('<div class="card">', unsafe_allow_html=True)
+
+st.subheader("🧪 AI What-If Financial Simulator")
+
+simulation_options = [
+
+    "Revenue drops by 20%",
+
+    "Global recession impacts business",
+
+    "AI investment doubles",
+
+    "Supply chain disruption increases",
+
+    "Competitor launches disruptive product",
+
+    "Regulatory restrictions increase",
+
+    "Stock market crashes by 30%"
+]
+
+selected_simulation = st.selectbox(
+    "Choose Simulation Scenario",
+    simulation_options
+)
+
+if st.button("🧠 Run Financial Simulation"):
+
+    if not st.session_state.pdf_processed:
+
+        st.warning(
+            "Please upload financial PDF first."
+        )
+
+    else:
+
+        simulator = WhatIfSimulator(
+            st.session_state.rag
+        )
+
+        with st.spinner(
+            "Running AI Financial Simulation..."
+        ):
+
+            simulation_output = simulator.simulate(
+                company_name,
+                selected_simulation
+            )
+
+        st.success(
+            "✅ Simulation Completed"
+        )
+
+        with st.expander(
+            "📊 AI Scenario Simulation",
+            expanded=True
+        ):
+
+            st.write(simulation_output)
 
 st.markdown('</div>', unsafe_allow_html=True)
 
