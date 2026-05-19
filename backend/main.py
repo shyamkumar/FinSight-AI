@@ -8,6 +8,7 @@ from fastapi import UploadFile, File
 
 from backend.rag.pdf_extractor import extract_pdf_text
 from backend.rag.chunking import chunk_text
+from backend.rag.embeddings import create_embeddings
 
 app = FastAPI()
 
@@ -71,10 +72,12 @@ async def upload_report(file: UploadFile = File(...)):
         f.write(await file.read())
     extracted_text = extract_pdf_text(file_location)
     chunks = chunk_text(extracted_text)
+    embeddings = create_embeddings(chunks[:5])
 
     return {
     "filename": file.filename,
     "text_length": len(extracted_text),
     "total_chunks": len(chunks),
+    "embeddings_created": len(embeddings),
     "first_chunk_preview": chunks[0]
 }
