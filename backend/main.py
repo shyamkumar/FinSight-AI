@@ -1,5 +1,8 @@
 from fastapi import FastAPI
-from backend.tools.finance_tools import get_stock_info
+from backend.tools.finance_tools import (
+    get_stock_info,
+    get_stock_news
+)
 
 app = FastAPI()
 
@@ -24,5 +27,12 @@ def health():
 def stock_info(ticker: str):
 
     result = get_stock_info(ticker)
+
+    return result
+
+@app.get("/news/{ticker}")
+def stock_news(ticker: str):
+
+    result = get_stock_news(ticker)
 
     return result
