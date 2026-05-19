@@ -11,6 +11,9 @@ from app.simulations.whatif_simulator import WhatIfSimulator
 from app.debate.debate_agents import DebateAgents
 from app.utils.ppt_generator import generate_ppt_report
 from app.analytics.market_sentiment import MarketSentimentAnalyzer
+from app.utils.ai_company_detector import (
+    AICompanyDetector
+)
 
 
 # ============================================================
@@ -205,16 +208,46 @@ if uploaded_file is not None:
         st.session_state.pdf_path = pdf_path
 
         with st.spinner(
-            "Processing Financial Report..."
-        ):
+             "Processing Financial Report..."
+       ):
 
-            rag = FinancialRAG()
+          rag = FinancialRAG()
 
-            rag.ingest_pdf(pdf_path)
+        # ============================================
+        # INGEST PDF
+        # ============================================
 
-            st.session_state.rag = rag
+        rag.ingest_pdf(pdf_path)
 
-            st.session_state.pdf_processed = True
+        # ============================================
+        # AI COMPANY DETECTION
+        # ============================================
+
+        pdf_text = rag.extract_text_from_pdf(
+        pdf_path
+        )
+
+        detector = AICompanyDetector()
+
+        company_info = detector.detect(
+        pdf_text
+        )
+
+        st.session_state.company_name = (
+        company_info["company"]
+        )
+
+        st.session_state.stock_ticker = (
+        company_info["ticker"]
+        )
+
+        # ============================================
+        # SAVE RAG OBJECT
+        # ============================================
+
+        st.session_state.rag = rag
+
+        st.session_state.pdf_processed = True
 
         st.success(
             "✅ Financial Report Processed Successfully"
