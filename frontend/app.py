@@ -1,8 +1,12 @@
+
 import streamlit as st
 import requests
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+
+if "analysis_result" not in st.session_state:
+    st.session_state.analysis_result = {}
 
 # ==========================================
 # PAGE CONFIG
@@ -120,56 +124,6 @@ with col2:
     </div>
     """, unsafe_allow_html=True)
 
-col3, col4 = st.columns(2)
-
-with col3:
-
-    st.markdown("""
-    <div style="
-        background-color:#FFFFFF;
-        padding:20px;
-        border-radius:15px;
-        box-shadow:0px 2px 8px rgba(0,0,0,0.08);
-        margin-bottom:20px;
-    ">
-
-    <h3>🔍 AI Research Engine</h3>
-
-    <ul>
-        <li>Azure AI Search</li>
-        <li>Semantic Financial Search</li>
-        <li>Annual Report QA</li>
-        <li>Financial Report Retrieval</li>
-        <li>Enterprise RAG Pipeline</li>
-    </ul>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-with col4:
-
-    st.markdown("""
-    <div style="
-        background-color:#FFFFFF;
-        padding:20px;
-        border-radius:15px;
-        box-shadow:0px 2px 8px rgba(0,0,0,0.08);
-        margin-bottom:20px;
-    ">
-
-    <h3>☁️ Cloud AI Architecture</h3>
-
-    <ul>
-        <li>Azure OpenAI</li>
-        <li>Azure Blob Storage</li>
-        <li>FastAPI Backend</li>
-        <li>Vector Embeddings</li>
-        <li>Cloud-Native AI Stack</li>
-    </ul>
-
-    </div>
-    """, unsafe_allow_html=True)
-
 st.divider()
 
 # ==========================================
@@ -183,583 +137,408 @@ if page == "Stock Analysis":
         placeholder="Example: NVDA"
     )
 
-    if st.button("Analyze Stock"):
+# ==========================================
+# ANALYZE BUTTON
+# ==========================================
 
-        if ticker.strip() == "":
+if st.button("Analyze Stock"):
 
-            st.error("Please enter a stock ticker.")
+    with st.spinner("Analyzing stock..."):
 
-        else:
+        response = requests.post(
+            "http://127.0.0.1:8000/analyze",
+            json={
+                "ticker": ticker
+            }
+        )
 
-            with st.spinner("Analyzing stock..."):
+        result = response.json()
 
-                response = requests.post(
-                    "http://127.0.0.1:8000/analyze",
-                    json={
-                        "ticker": ticker
+        st.session_state.analysis_result = result
+
+# ==========================================
+# LOAD STORED ANALYSIS
+# ==========================================
+
+stored_result = st.session_state.get(
+    "analysis_result",
+    {}
+)
+
+if stored_result:
+
+    analysis = stored_result.get(
+        "analysis",
+        {}
+    )
+
+    metrics = stored_result.get(
+        "metrics",
+        {}
+    )
+
+    ai_scores = stored_result.get(
+        "ai_scores",
+        {}
+    )
+
+    multi_agent = stored_result.get(
+        "multi_agent",
+        {}
+    )
+
+    st.success("Analysis Complete")
+
+    # ==========================================
+    # KPI DASHBOARD
+    # ==========================================
+
+    st.subheader("📊 Financial KPI Dashboard")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+
+        st.metric(
+            "Market Cap",
+            f"${round(metrics.get('marketCap', 0)/1e12, 2)}T"
+            if metrics.get("marketCap")
+            else "N/A"
+        )
+
+    with col2:
+
+        st.metric(
+            "Trailing P/E",
+            round(metrics.get("trailingPE", 0), 2)
+            if metrics.get("trailingPE")
+            else "N/A"
+        )
+
+    with col3:
+
+        st.metric(
+            "Profit Margin",
+            f"{round(metrics.get('profitMargins', 0)*100, 2)}%"
+            if metrics.get("profitMargins")
+            else "N/A"
+        )
+
+    with col4:
+
+        st.metric(
+            "Revenue Growth",
+            f"{round(metrics.get('revenueGrowth', 0)*100, 2)}%"
+            if metrics.get("revenueGrowth")
+            else "N/A"
+        )
+
+    st.divider()
+
+    # ==========================================
+    # AI SIGNALS
+    # ==========================================
+
+    st.subheader("🤖 AI Investment Signals")
+
+    ai_score = ai_scores.get("ai_score", 0)
+
+    fig_gauge = go.Figure(
+
+        go.Indicator(
+
+            mode="gauge+number",
+
+            value=ai_score,
+
+            title={
+                "text": "AI Investment Score"
+            },
+
+            gauge={
+
+                "axis": {
+                    "range": [0, 100]
+                },
+
+                "bar": {
+                    "color": "darkblue"
+                },
+
+                "steps": [
+
+                    {
+                        "range": [0, 40],
+                        "color": "#ffcccc"
+                    },
+
+                    {
+                        "range": [40, 70],
+                        "color": "#fff4cc"
+                    },
+
+                    {
+                        "range": [70, 100],
+                        "color": "#ccffcc"
                     }
-                )
+                ]
+            }
+        )
+    )
 
-                result = response.json()
+    st.plotly_chart(
+        fig_gauge,
+        use_container_width=True
+    )
 
-                analysis = result.get(
-                    "analysis",
-                    {}
-                )
+    # ==========================================
+    # AI SIGNAL METRICS
+    # ==========================================
 
-                metrics = result.get(
-                    "metrics",
-                    {}
-                )
+    col1, col2, col3, col4 = st.columns(4)
 
-                ai_scores = result.get(
-                    "ai_scores",
-                    {}
-                )
+    with col1:
 
-                if analysis:
+        st.metric(
+            "AI Score",
+            f"{ai_scores.get('ai_score', 0)}/100"
+        )
 
-                    st.success(
-                        "Analysis Complete"
-                    )
+    with col2:
 
-                    # ==========================================
-                    # KPI DASHBOARD
-                    # ==========================================
+        st.metric(
+            "Market Sentiment",
+            ai_scores.get("sentiment", "N/A")
+        )
 
-                    st.subheader(
-                        "📊 Financial KPI Dashboard"
-                    )
+    with col3:
 
-                    col1, col2, col3, col4 = st.columns(4)
-
-                    with col1:
+        st.metric(
+            "Risk Level",
+            ai_scores.get("risk_level", "N/A")
+        )
 
-                        st.metric(
-                            "Market Cap",
-                            f"${round(metrics.get('marketCap', 0)/1e12, 2)}T"
-                            if metrics.get("marketCap")
-                            else "N/A"
-                        )
+    with col4:
 
-                    with col2:
+        st.metric(
+            "AI Confidence",
+            f"{ai_scores.get('confidence', 0)}%"
+        )
 
-                        st.metric(
-                            "Trailing P/E",
-                            round(
-                                metrics.get(
-                                    "trailingPE",
-                                    0
-                                ),
-                                2
-                            )
-                            if metrics.get("trailingPE")
-                            else "N/A"
-                        )
-
-                    with col3:
+    st.divider()
 
-                        st.metric(
-                            "Profit Margin",
-                            f"{round(metrics.get('profitMargins', 0)*100, 2)}%"
-                            if metrics.get("profitMargins")
-                            else "N/A"
-                        )
-
-                    with col4:
-
-                        st.metric(
-                            "Revenue Growth",
-                            f"{round(metrics.get('revenueGrowth', 0)*100, 2)}%"
-                            if metrics.get("revenueGrowth")
-                            else "N/A"
-                        )
+    # ==========================================
+    # COMPANY OVERVIEW
+    # ==========================================
 
-                    st.divider()
+    st.subheader("🏢 Company Overview")
 
-                    # ==========================================
-                    # AI SIGNALS
-                    # ==========================================
+    st.write(
+        analysis.get(
+            "company_overview",
+            "N/A"
+        )
+    )
 
-                    st.subheader(
-                        "🤖 AI Investment Signals"
-                    )
-
-                    ai_score = ai_scores.get(
-                        "ai_score",
-                        0
-                    )
-
-                    fig_gauge = go.Figure(
-
-                        go.Indicator(
-
-                            mode="gauge+number",
-
-                            value=ai_score,
-
-                            title={
-                                "text": "AI Investment Score"
-                            },
-
-                            gauge={
-
-                                "axis": {
-                                    "range": [0, 100]
-                                },
-
-                                "bar": {
-                                    "color": "darkblue"
-                                },
-
-                                "steps": [
-
-                                    {
-                                        "range": [0, 40],
-                                        "color": "#ffcccc"
-                                    },
-
-                                    {
-                                        "range": [40, 70],
-                                        "color": "#fff4cc"
-                                    },
-
-                                    {
-                                        "range": [70, 100],
-                                        "color": "#ccffcc"
-                                    }
-                                ]
-                            }
-                        )
-                    )
-
-                    st.plotly_chart(
-                        fig_gauge,
-                        use_container_width=True
-                    )
-
-                    col1, col2, col3, col4 = st.columns(4)
-
-                    with col1:
-
-                        st.metric(
-                            "AI Score",
-                            f"{ai_scores.get('ai_score', 0)}/100"
-                        )
+    # ==========================================
+    # BULLISH VS BEARISH
+    # ==========================================
 
-                    with col2:
+    col1, col2 = st.columns(2)
 
-                        st.metric(
-                            "Market Sentiment",
-                            ai_scores.get(
-                                "sentiment",
-                                "N/A"
-                            )
-                        )
+    with col1:
 
-                    with col3:
+        st.subheader("📈 Bullish Factors")
 
-                        st.metric(
-                            "Risk Level",
-                            ai_scores.get(
-                                "risk_level",
-                                "N/A"
-                            )
-                        )
+        for item in analysis.get(
+            "bullish_factors",
+            []
+        ):
 
-                    with col4:
+            st.success(item)
 
-                        st.metric(
-                            "AI Confidence",
-                            f"{ai_scores.get('confidence', 0)}%"
-                        )
+    with col2:
 
-                    st.divider()
-
-                    # ==========================================
-                    # RADAR CHART
-                    # ==========================================
-
-                    categories = [
-                        "Profitability",
-                        "Growth",
-                        "Liquidity",
-                        "AI Score",
-                        "Sentiment"
-                    ]
-
-                    values = [
+        st.subheader("⚠️ Bearish Factors")
 
-                        min(
-                            100,
-                            metrics.get(
-                                "profitMargins",
-                                0
-                            ) * 100
-                        ),
+        for item in analysis.get(
+            "bearish_factors",
+            []
+        ):
 
-                        min(
-                            100,
-                            metrics.get(
-                                "revenueGrowth",
-                                0
-                            ) * 100
-                        ),
+            st.error(item)
 
-                        min(
-                            100,
-                            metrics.get(
-                                "currentRatio",
-                                0
-                            ) * 20
-                        ),
-
-                        ai_scores.get(
-                            "ai_score",
-                            0
-                        ),
+    st.divider()
 
-                        80 if ai_scores.get(
-                            "sentiment"
-                        ) == "Bullish" else 50
-                    ]
-
-                    fig_radar = go.Figure()
+    # ==========================================
+    # RISK ANALYSIS
+    # ==========================================
 
-                    fig_radar.add_trace(
-
-                        go.Scatterpolar(
-
-                            r=values,
-
-                            theta=categories,
-
-                            fill="toself",
-
-                            name="Financial Strength"
-                        )
-                    )
+    st.subheader("📉 Risk Analysis")
 
-                    fig_radar.update_layout(
+    st.write(
+        analysis.get(
+            "risk_analysis",
+            "N/A"
+        )
+    )
 
-                        polar=dict(
+    # ==========================================
+    # LONG TERM OUTLOOK
+    # ==========================================
 
-                            radialaxis=dict(
+    st.subheader("🚀 Long-Term Outlook")
 
-                                visible=True,
-
-                                range=[0, 100]
-                            )
-                        ),
+    st.write(
+        analysis.get(
+            "long_term_outlook",
+            "N/A"
+        )
+    )
 
-                        showlegend=False
-                    )
+    # ==========================================
+    # RECOMMENDATION
+    # ==========================================
 
-                    st.subheader(
-                        "📡 Financial Strength Radar"
-                    )
+    st.subheader("💡 Recommendation")
 
-                    st.plotly_chart(
-                        fig_radar,
-                        use_container_width=True
-                    )
+    st.info(
+        analysis.get(
+            "recommendation",
+            "N/A"
+        )
+    )
 
-                    st.divider()
+    st.divider()
 
-                    # ==========================================
-                    # DONUT CHART
-                    # ==========================================
+    # ==========================================
+    # MULTI AGENT AI WORKSPACE
+    # ==========================================
 
-                    bullish = len(
-                        analysis.get(
-                            "bullish_factors",
-                            []
-                        )
-                    )
+    st.subheader("🤖 Multi-Agent AI Workspace")
 
-                    bearish = len(
-                        analysis.get(
-                            "bearish_factors",
-                            []
-                        )
-                    )
+    col1, col2 = st.columns(2)
 
-                    fig_pie = go.Figure(
+    with col1:
 
-                        data=[
+        st.markdown("### 🐂 Bull Agent")
 
-                            go.Pie(
+        st.success(
+            multi_agent.get(
+                "bull_agent",
+                "N/A"
+            )
+        )
 
-                                labels=[
-                                    "Bullish",
-                                    "Bearish"
-                                ],
+    with col2:
 
-                                values=[
-                                    bullish,
-                                    bearish
-                                ],
+        st.markdown("### 🐻 Bear Agent")
 
-                                hole=.5
-                            )
-                        ]
-                    )
+        st.error(
+            multi_agent.get(
+                "bear_agent",
+                "N/A"
+            )
+        )
 
-                    st.subheader(
-                        "📊 Market Sentiment Distribution"
-                    )
-
-                    st.plotly_chart(
-                        fig_pie,
-                        use_container_width=True
-                    )
+    col3, col4 = st.columns(2)
 
-                    st.divider()
-
-                    # ==========================================
-                    # COMPANY OVERVIEW
-                    # ==========================================
-
-                    st.subheader(
-                        "🏢 Company Overview"
-                    )
-
-                    st.write(
-                        analysis.get(
-                            "company_overview",
-                            "N/A"
-                        )
-                    )
+    with col3:
 
-                    # ==========================================
-                    # BULLISH VS BEARISH
-                    # ==========================================
+        st.markdown("### ⚠️ Risk Agent")
 
-                    col1, col2 = st.columns(2)
+        st.warning(
+            multi_agent.get(
+                "risk_agent",
+                "N/A"
+            )
+        )
 
-                    with col1:
+    with col4:
 
-                        st.subheader(
-                            "📈 Bullish Factors"
-                        )
+        st.markdown("### 📊 Research Agent")
 
-                        for item in analysis.get(
-                            "bullish_factors",
-                            []
-                        ):
+        st.info(
+            multi_agent.get(
+                "research_agent",
+                "N/A"
+            )
+        )
 
-                            st.success(item)
+    st.divider()
 
-                    with col2:
-
-                        st.subheader(
-                            "⚠️ Bearish Factors"
-                        )
+    # ==========================================
+    # EXECUTIVE REPORT
+    # ==========================================
 
-                        for item in analysis.get(
-                            "bearish_factors",
-                            []
-                        ):
+    st.subheader("📄 Executive AI Report")
 
-                            st.error(item)
+    if "report_generated" not in st.session_state:
 
-                    st.divider()
+        st.session_state.report_generated = False
 
-                    # ==========================================
-                    # RISK ANALYSIS
-                    # ==========================================
+    if "report_result" not in st.session_state:
 
-                    st.subheader(
-                        "📉 Risk Analysis"
-                    )
+        st.session_state.report_result = {}
 
-                    st.write(
-                        analysis.get(
-                            "risk_analysis",
-                            "N/A"
-                        )
-                    )
-
-                    # ==========================================
-                    # LONG TERM OUTLOOK
-                    # ==========================================
+    if st.button("Generate Executive AI Report"):
 
-                    st.subheader(
-                        "🚀 Long-Term Outlook"
-                    )
+        with st.spinner("Generating AI Report..."):
 
-                    st.write(
-                        analysis.get(
-                            "long_term_outlook",
-                            "N/A"
-                        )
-                    )
+            report_response = requests.post(
+                "http://127.0.0.1:8000/generate-report",
+                json={
+                    "ticker": ticker
+                }
+            )
 
-                    # ==========================================
-                    # RECOMMENDATION
-                    # ==========================================
+            report_result = report_response.json()
 
-                    st.subheader(
-                        "💡 Recommendation"
-                    )
+            st.session_state.report_generated = True
 
-                    st.info(
-                        analysis.get(
-                            "recommendation",
-                            "N/A"
-                        )
-                    )
+            st.session_state.report_result = report_result
 
-                    st.divider()
-
-                    # ==========================================
-                    # MULTI AGENT WORKSPACE
-                    # ==========================================
-
-                    multi_agent = result.get(
-                        "multi_agent",
-                        {}
-                    )
+    if st.session_state.report_generated:
 
-                    st.subheader(
-                        "🤖 Multi-Agent AI Workspace"
-                    )
+        st.success(
+            "Executive AI Report Generated"
+        )
 
-                    col1, col2 = st.columns(2)
+        st.json(
+            st.session_state.report_result
+        )
 
-                    with col1:
+    st.divider()
 
-                        st.markdown(
-                            "### 🐂 Bull Agent"
-                        )
+    # ==========================================
+    # STOCK CHART
+    # ==========================================
 
-                        st.success(
-                            multi_agent.get(
-                                "bull_agent",
-                                "N/A"
-                            )
-                        )
+    chart_response = requests.get(
+        f"http://127.0.0.1:8000/stock-chart/{ticker}"
+    )
 
-                    with col2:
+    chart_data = chart_response.json()
 
-                        st.markdown(
-                            "### 🐻 Bear Agent"
-                        )
+    if isinstance(chart_data, list):
 
-                        st.error(
-                            multi_agent.get(
-                                "bear_agent",
-                                "N/A"
-                            )
-                        )
+        df = pd.DataFrame(chart_data)
 
-                    col3, col4 = st.columns(2)
+        fig = px.line(
+            df,
+            x="Date",
+            y="Close",
+            title=f"{ticker} Stock Price (6 Months)"
+        )
 
-                    with col3:
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
 
-                        st.markdown(
-                            "### ⚠️ Risk Agent"
-                        )
+    else:
 
-                        st.warning(
-                            multi_agent.get(
-                                "risk_agent",
-                                "N/A"
-                            )
-                        )
-
-                    with col4:
-
-                        st.markdown(
-                            "### 📊 Research Agent"
-                        )
-
-                        st.info(
-                            multi_agent.get(
-                                "research_agent",
-                                "N/A"
-                            )
-                        )
-
-                    st.divider()
-
-                    # ==========================================
-                    # EXECUTIVE REPORT
-                    # ==========================================
-
-                    st.subheader(
-                        "📄 Executive AI Report"
-                    )
-
-                    if st.button(
-                        "Generate Executive AI Report"
-                    ):
-
-                        with st.spinner(
-                            "Generating AI Report..."
-                        ):
-
-                            report_response = requests.post(
-                                "http://127.0.0.1:8000/generate-report",
-                                json={
-                                    "ticker": ticker
-                                }
-                            )
-
-                            report_result = report_response.json()
-
-                            st.success(
-                                "Executive AI Report Generated"
-                            )
-
-                            st.json(
-                                report_result
-                            )
-
-                    st.divider()
-
-                    # ==========================================
-                    # STOCK CHART
-                    # ==========================================
-
-                    chart_response = requests.get(
-                        f"http://127.0.0.1:8000/stock-chart/{ticker}"
-                    )
-
-                    chart_data = chart_response.json()
-
-                    if isinstance(
-                        chart_data,
-                        list
-                    ):
-
-                        df = pd.DataFrame(
-                            chart_data
-                        )
-
-                        fig = px.line(
-                            df,
-                            x="Date",
-                            y="Close",
-                            title=f"{ticker} Stock Price (6 Months)"
-                        )
-
-                        st.plotly_chart(
-                            fig,
-                            use_container_width=True
-                        )
-
-                    else:
-
-                        st.error(
-                            "Chart data invalid"
-                        )
-
-                else:
-
-                    st.error(
-                        "Analysis data not found."
-                    )
+        st.error("Chart data invalid")
 
 # ==========================================
 # ANNUAL REPORT QA PAGE
@@ -768,16 +547,12 @@ if page == "Stock Analysis":
 if page == "Annual Report QA":
 
     if "pdf_uploaded" not in st.session_state:
-
         st.session_state.pdf_uploaded = False
 
     if "messages" not in st.session_state:
-
         st.session_state.messages = []
 
-    st.subheader(
-        "📄 Upload Annual Report"
-    )
+    st.subheader("📄 Upload Annual Report")
 
     uploaded_file = st.file_uploader(
         "Upload PDF",
@@ -808,27 +583,17 @@ if page == "Annual Report QA":
                 "PDF Processed Successfully"
             )
 
-            st.info(
-                "PDF already uploaded and indexed."
-            )
-
             st.session_state.pdf_uploaded = True
 
     st.divider()
 
-    st.subheader(
-        "🤖 Financial AI Chat"
-    )
+    st.subheader("🤖 Financial AI Chat")
 
     for message in st.session_state.messages:
 
-        with st.chat_message(
-            message["role"]
-        ):
+        with st.chat_message(message["role"]):
 
-            st.markdown(
-                message["content"]
-            )
+            st.markdown(message["content"])
 
     prompt = st.chat_input(
         "Ask questions about annual report"
@@ -844,7 +609,6 @@ if page == "Annual Report QA":
         )
 
         with st.chat_message("user"):
-
             st.markdown(prompt)
 
         with st.chat_message("assistant"):

@@ -248,39 +248,95 @@ def stock_chart(ticker: str):
 @app.post("/generate-report")
 def generate_report(request: StockRequest):
 
-    stock_data = get_stock_info(
-        request.ticker
-    )
+    try:
 
-    ratios = get_financial_ratios(
-        request.ticker
-    )
+        print("===================================")
+        print("GENERATE REPORT API CALLED")
+        print("Ticker:", request.ticker)
 
-    analysis = generate_stock_analysis(
-        request.ticker,
-        stock_data,
-        ratios
-    )
+        # ======================================
+        # FETCH STOCK DATA
+        # ======================================
 
-    ai_scores = generate_ai_score(
-        analysis
-    )
+        stock_data = get_stock_info(
+            request.ticker
+        )
 
-    multi_agent = generate_multi_agent_analysis(
-        analysis
-    )
+        print("Stock data fetched")
 
-    pdf_file = generate_pdf_report(
-        request.ticker,
-        analysis,
-        ratios,
-        ai_scores,
-        multi_agent
-    )
+        # ======================================
+        # FETCH FINANCIAL RATIOS
+        # ======================================
 
-    return {
+        ratios = get_financial_ratios(
+            request.ticker
+        )
 
-        "message": "Report generated successfully",
+        print("Financial ratios fetched")
 
-        "pdf_file": pdf_file
-    }
+        # ======================================
+        # GENERATE AI ANALYSIS
+        # ======================================
+
+        analysis = generate_stock_analysis(
+            request.ticker,
+            stock_data,
+            ratios
+        )
+
+        print("AI analysis generated")
+
+        # ======================================
+        # AI SCORES
+        # ======================================
+
+        ai_scores = generate_ai_score(
+            analysis
+        )
+
+        print("AI scores generated")
+
+        # ======================================
+        # MULTI AGENT ANALYSIS
+        # ======================================
+
+        multi_agent = generate_multi_agent_analysis(
+            analysis
+        )
+
+        print("Multi-agent analysis generated")
+
+        # ======================================
+        # PDF GENERATION
+        # ======================================
+
+        print("Starting PDF generation...")
+
+        pdf_file = generate_pdf_report(
+            request.ticker,
+            analysis,
+            ratios,
+            ai_scores,
+            multi_agent
+        )
+
+        print("PDF GENERATED SUCCESSFULLY")
+        print("PDF FILE:", pdf_file)
+
+        return {
+
+            "message": "Report generated successfully",
+
+            "pdf_file": pdf_file
+        }
+
+    except Exception as e:
+
+        print("===================================")
+        print("REPORT GENERATION ERROR")
+        print(str(e))
+
+        return {
+
+            "error": str(e)
+        }
