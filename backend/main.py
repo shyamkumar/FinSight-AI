@@ -29,6 +29,17 @@ from backend.tools.ai_tools import (
 from backend.tools.blob_tools import (
     upload_pdf_to_blob
 )
+from backend.tools.ai_tools import (
+    generate_stock_analysis,
+    generate_ai_score
+)
+
+from backend.tools.ai_tools import (
+    generate_multi_agent_analysis
+)
+from backend.tools.report_generator import (
+    generate_pdf_report
+)
 
 class StockRequest(BaseModel):
     ticker: str
@@ -39,20 +50,40 @@ app = FastAPI()
 @app.post("/analyze")
 def analyze_stock(request: StockRequest):
 
-    stock_data = get_stock_info(request.ticker)
+    stock_data = get_stock_info(
+        request.ticker
+    )
 
-    ratios = get_financial_ratios(request.ticker)
+    ratios = get_financial_ratios(
+        request.ticker
+    )
+    print(ratios)
+
 
     analysis = generate_stock_analysis(
         request.ticker,
         stock_data,
         ratios
     )
+    ai_scores = generate_ai_score(
+    analysis
+    )
+    multi_agent = generate_multi_agent_analysis(
+    analysis
+   )
 
     return {
-        "ticker": request.ticker,
-        "analysis": analysis
-    }
+
+    "ticker": request.ticker,
+
+    "analysis": analysis,
+
+    "metrics": ratios,
+
+    "ai_scores": ai_scores,
+
+    "multi_agent": multi_agent
+}
 
 @app.get("/")
 def home():
@@ -213,3 +244,43 @@ def stock_chart(ticker: str):
     data = get_stock_chart_data(ticker)
 
     return data
+
+@app.post("/generate-report")
+def generate_report(request: StockRequest):
+
+    stock_data = get_stock_info(
+        request.ticker
+    )
+
+    ratios = get_financial_ratios(
+        request.ticker
+    )
+
+    analysis = generate_stock_analysis(
+        request.ticker,
+        stock_data,
+        ratios
+    )
+
+    ai_scores = generate_ai_score(
+        analysis
+    )
+
+    multi_agent = generate_multi_agent_analysis(
+        analysis
+    )
+
+    pdf_file = generate_pdf_report(
+        request.ticker,
+        analysis,
+        ratios,
+        ai_scores,
+        multi_agent
+    )
+
+    return {
+
+        "message": "Report generated successfully",
+
+        "pdf_file": pdf_file
+    }

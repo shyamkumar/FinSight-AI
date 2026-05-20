@@ -34,24 +34,41 @@ def get_stock_news(ticker: str):
         })
 
     return latest_news
-def get_financial_ratios(ticker: str):
 
-    stock = yf.Ticker(ticker)
+def get_financial_ratios(ticker):
 
-    info = stock.info
+    try:
 
-    return {
-        "ticker": ticker.upper(),
-        "pe_ratio": info.get("trailingPE"),
-        "forward_pe": info.get("forwardPE"),
-        "eps": info.get("trailingEps"),
-        "revenue_growth": info.get("revenueGrowth"),
-        "profit_margin": info.get("profitMargins"),
-        "debt_to_equity": info.get("debtToEquity"),
-        "return_on_equity": info.get("returnOnEquity"),
-        "current_ratio": info.get("currentRatio")
-    }
+        stock = yf.Ticker(ticker)
 
+        info = stock.info
+
+        print("YFINANCE INFO:")
+        print(info)
+
+        return {
+
+            "marketCap": info.get("marketCap", 0),
+
+            "trailingPE": info.get("trailingPE", 0),
+
+            "profitMargins": info.get("profitMargins", 0),
+
+            "revenueGrowth": info.get("revenueGrowth", 0),
+
+            "currentRatio": info.get("currentRatio", 0),
+
+            "debtToEquity": info.get("debtToEquity", 0),
+
+            "returnOnEquity": info.get("returnOnEquity", 0)
+        }
+
+    except Exception as e:
+
+        print("FINANCIAL RATIOS ERROR:")
+        print(e)
+
+        return {}
 def get_stock_chart_data(ticker):
 
     stock = yf.Ticker(ticker)

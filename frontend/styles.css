@@ -1,0 +1,17 @@
+.main {
+    background-color: #F5F7FB;
+}
+
+h1, h2, h3 {
+    color: #1E293B;
+}
+
+.stButton button {
+    border-radius: 10px;
+    height: 45px;
+    font-weight: 600;
+}
+
+[data-testid="stSidebar"] {
+    background-color: #FFFFFF;
+}
