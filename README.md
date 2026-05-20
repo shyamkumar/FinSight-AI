@@ -1,165 +1,185 @@
-````markdown
-# 🚀 FinSight AI — Financial Strategy Intelligence Platform
+# 📈 FinSight AI — Cloud-Deployed AI Financial Research Assistant
 
-FinSight AI is an AI-powered Financial Research and Strategic Intelligence Platform designed to analyze annual reports, generate executive-level insights, simulate boardroom discussions, and provide investment intelligence using Retrieval-Augmented Generation (RAG), Azure OpenAI, and Multi-Agent AI workflows.
+FinSight AI is an enterprise-grade AI-powered Financial Research Assistant built using Azure OpenAI, Azure AI Search, FastAPI, and Streamlit.
 
-The platform enables users to upload financial reports, perform strategic financial analysis, simulate business scenarios, generate investor presentations, and retrieve explainable AI insights through an interactive dashboard.
-
----
-
-# 🌟 Key Features
-
-## 📄 Financial Report Intelligence
-- Upload and analyze annual financial reports
-- AI-powered document understanding
-- Executive-level financial insights
-- Explainable AI responses with source references
+The platform enables intelligent stock analysis, annual report question-answering (RAG), executive AI-generated investment reports, multi-agent financial reasoning, and cloud-native financial research workflows.
 
 ---
 
-## 🧠 Multi-Agent Boardroom AI
-Simulate enterprise decision-making using:
-- CEO Strategy Agent
-- Financial Research Agent
-- Risk Analysis Agent
-- Investment Strategy Agent
-- Corporate Strategy Agent
+# 🚀 Features
+
+## 📊 AI Stock Analysis
+- Real-time stock analysis
+- Company overview generation
+- Bullish vs bearish analysis
+- Risk assessment
+- Long-term outlook prediction
+- AI-powered investment recommendation
 
 ---
 
-## ⚔️ AI Bull vs Bear Debate Engine
-Generate:
-- Bullish investment arguments
-- Bearish market concerns
-- Strategic investor reasoning
-- Financial risk debates
+## 📈 Financial KPI Dashboard
+- Market capitalization
+- P/E ratio
+- Profit margins
+- Revenue growth
+- AI investment score
+- Risk level indicators
+- Confidence metrics
 
 ---
 
-## 🧪 AI What-If Financial Simulation
-Simulate business scenarios such as:
-- Revenue decline
-- Global recession
-- Market crashes
-- AI investment expansion
-- Supply chain disruption
+## 🤖 Multi-Agent AI Workspace
+Specialized AI agents collaborate to simulate institutional financial analysis.
+
+### Agents:
+- 🐂 Bull Agent
+- 🐻 Bear Agent
+- ⚠️ Risk Agent
+- 📊 Research Agent
 
 ---
 
-## 📊 AI Executive Intelligence
-Generate:
-- Strategic business insights
-- SWOT analysis
-- Executive recommendations
-- Investment intelligence
-- Financial opportunity analysis
+## 📄 Executive AI Report Generator
+Generate downloadable executive-level financial PDF reports containing:
+- AI stock analysis
+- Financial KPIs
+- Multi-agent insights
+- Investment recommendations
+- Strategic outlook
 
 ---
 
-## 📈 Real-Time Market Sentiment
-Analyze:
-- Market momentum
-- Investor confidence
-- Stock movement trends
-- AI-driven sentiment indicators
+## 🔍 Annual Report QA (RAG)
+Upload annual reports and ask natural language questions.
+
+### Capabilities:
+- PDF upload
+- Semantic chunking
+- Vector embeddings
+- Azure AI Search retrieval
+- AI-generated answers with source citations
 
 ---
 
-## 📑 AI Investor Presentation Generator
-Automatically generate:
-- Investor-ready PowerPoint presentations
-- Executive summaries
-- Financial strategy reports
-- Risk analysis presentations
+## ☁️ Azure Cloud Architecture
+- Azure OpenAI
+- Azure AI Search
+- Azure Blob Storage
+- FastAPI backend
+- Streamlit frontend
+- Vector search architecture
 
 ---
 
-# 🏗️ Technology Stack
-
-| Technology | Purpose |
-|---|---|
-| Python | Backend Development |
-| Streamlit | Interactive Dashboard |
-| Azure OpenAI | LLM + AI Reasoning |
-| LangChain | RAG Orchestration |
-| FAISS | Vector Search |
-| PyMuPDF | PDF Processing |
-| Plotly | Data Visualization |
-| yFinance | Market Data |
-| python-pptx | PPT Generation |
-
----
-
-# 🧠 AI Architecture
+# 🏗️ System Architecture
 
 ```text
-PDF Upload
-    ↓
-Document Extraction
-    ↓
-Chunking & Embeddings
-    ↓
-FAISS Vector Search
-    ↓
-Retrieval-Augmented Generation
-    ↓
-Multi-Agent Financial Intelligence
-    ↓
-Executive Decision Insights
-````
+User
+   ↓
+Streamlit Frontend
+   ↓
+FastAPI Backend
+   ↓
+Azure OpenAI
+   ↓
+Azure AI Search (Vector Search)
+   ↓
+Azure Blob Storage
+```
+
+---
+
+# 🧠 AI Capabilities
+
+- Retrieval-Augmented Generation (RAG)
+- Multi-Agent AI reasoning
+- Financial risk analysis
+- AI investment scoring
+- Semantic document retrieval
+- Executive report generation
+
+---
+
+# 🛠️ Tech Stack
+
+## Frontend
+- Streamlit
+- Plotly
+- Pandas
+
+## Backend
+- FastAPI
+- Python
+
+## AI/ML
+- Azure OpenAI
+- Embeddings
+- RAG Pipeline
+- Vector Search
+
+## Cloud
+- Azure AI Search
+- Azure Blob Storage
+- Azure App Service
+
+## Financial APIs
+- Yahoo Finance (yfinance)
+
+## Reporting
+- ReportLab PDF Generation
 
 ---
 
 # 📂 Project Structure
 
-```bash
+```text
 FinSight-AI/
 │
-├── app/
+├── backend/
+│   ├── main.py
 │   ├── rag/
-│   ├── boardroom/
-│   ├── debate/
-│   ├── simulations/
-│   ├── analytics/
-│   ├── utils/
+│   ├── tools/
+│   └── services/
 │
-├── temp/
-├── streamlit_app.py
+├── frontend/
+│   ├── app.py
+│   └── styles.css
+│
+├── reports/
+│
 ├── requirements.txt
 ├── startup.sh
-├── runtime.txt
 ├── README.md
+└── .gitignore
 ```
 
 ---
 
 # ⚙️ Installation
 
-## Clone Repository
+## 1️⃣ Clone Repository
 
 ```bash
-git clone https://github.com/your-username/FinSight-AI.git
+git clone <your-github-repo-url>
+cd FinSight-AI
 ```
 
 ---
 
-## Create Virtual Environment
+## 2️⃣ Create Virtual Environment
 
 ```bash
 python -m venv venv
 ```
 
----
-
-## Activate Virtual Environment
-
 ### Windows
 
 ```bash
-venv\Scripts\activate
+venv\\Scripts\\activate
 ```
 
-### Linux / Mac
+### Mac/Linux
 
 ```bash
 source venv/bin/activate
@@ -167,7 +187,7 @@ source venv/bin/activate
 
 ---
 
-## Install Dependencies
+## 3️⃣ Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -182,94 +202,117 @@ Create a `.env` file:
 ```env
 AZURE_OPENAI_API_KEY=your_key
 AZURE_OPENAI_ENDPOINT=your_endpoint
-AZURE_OPENAI_API_VERSION=your_version
-AZURE_OPENAI_DEPLOYMENT=your_model
-AZURE_OPENAI_EMBEDDING_DEPLOYMENT=your_embedding_model
+
+AZURE_SEARCH_ENDPOINT=your_search_endpoint
+AZURE_SEARCH_KEY=your_search_key
+AZURE_SEARCH_INDEX=financial-reports
+
+AZURE_STORAGE_CONNECTION_STRING=your_blob_connection
 ```
 
 ---
 
-# 🚀 Run Application
+# ▶️ Run Backend
 
 ```bash
-streamlit run streamlit_app.py
+uvicorn backend.main:app --reload
 ```
 
----
-
-# ☁️ Cloud Deployment
-
-The platform supports deployment on:
-
-* Azure App Service
-* Docker-based cloud environments
-* Linux cloud runtimes
-
----
-
-# 📊 Example Use Cases
-
-* Financial Report Analysis
-* Investment Research
-* Executive Decision Support
-* Strategic Risk Intelligence
-* AI Boardroom Simulation
-* Market Sentiment Analysis
-* AI Investor Presentation Generation
-
----
-
-# 🧪 Example AI Prompts
+Backend runs on:
 
 ```text
-Simulate a Tesla executive boardroom discussion regarding AI and EV growth strategy.
-```
-
-```text
-Generate bullish vs bearish investment arguments for Nvidia.
-```
-
-```text
-What happens if global recession impacts EV demand by 25%?
-```
-
-```text
-Generate executive-level financial strategy recommendations.
+http://127.0.0.1:8000
 ```
 
 ---
 
-# 📈 Future Enhancements
+# ▶️ Run Frontend
 
-* Enterprise Semantic Search
-* Real-Time Financial News Intelligence
-* Advanced Financial Forecasting
-* AI Portfolio Advisor
-* Voice-Based Executive Assistant
-* Live Financial Risk Monitoring
-* Enterprise Workspace Collaboration
+```bash
+streamlit run frontend/app.py
+```
 
----
+Frontend runs on:
 
-# 🔒 Security & Privacy
-
-* Local vector storage support
-* Secure Azure OpenAI integration
-* No hardcoded credentials
-* Environment-based secret management
+```text
+http://localhost:8501
+```
 
 ---
 
-# 📌 Project Highlights
+# 📄 API Endpoints
 
-✅ Multi-Agent AI Architecture
-✅ Financial Intelligence Platform
-✅ Explainable AI Responses
-✅ Strategic Business Simulation
-✅ Executive-Level AI Insights
-✅ AI Debate Engine
-✅ Real-Time Market Sentiment
-✅ Investor Presentation Automation
+## Analyze Stock
+
+```http
+POST /analyze
+```
+
+---
+
+## Upload Annual Report
+
+```http
+POST /upload-report
+```
+
+---
+
+## RAG QA
+
+```http
+GET /rag-qa
+```
+
+---
+
+## Generate Executive Report
+
+```http
+POST /generate-report
+```
+
+---
+
+# 📸 Screenshots
+
+## 📊 AI Dashboard
+- KPI dashboard
+- AI score gauges
+- Financial charts
+
+## 🤖 Multi-Agent Workspace
+- Bull vs Bear analysis
+- Risk insights
+- Research agent outputs
+
+## 📄 Executive Reports
+- AI-generated investment PDF reports
+
+---
+
+# 🔮 Future Enhancements
+
+- Real-time financial news AI agent
+- SEC filing monitoring
+- Earnings call summarization
+- Portfolio optimization AI
+- Live stock sentiment tracking
+- Azure Front Door deployment
+- Authentication system
+- User dashboard & history
+
+---
+
+# ☁️ Deployment
+
+Planned production deployment stack:
+
+- Azure App Service
+- Azure Front Door
+- Azure Blob Storage
+- Azure AI Search
+- Azure OpenAI
 
 ---
 
@@ -277,11 +320,22 @@ Generate executive-level financial strategy recommendations.
 
 Shyam Kumar
 
+Senior Software Engineer | Salesforce Developer | AI Engineer
+
+---
+
+# ⭐ Key Highlights
+
+✅ Enterprise AI Architecture  
+✅ Cloud-Native Design  
+✅ Retrieval-Augmented Generation (RAG)  
+✅ Multi-Agent AI System  
+✅ Financial AI Copilot  
+✅ Executive Report Automation  
+✅ Azure AI Ecosystem Integration  
+
 ---
 
 # 📜 License
 
-This project is intended for educational, research, and demonstration purposes.
-
-```
-```
+This project is for educational and portfolio purposes.
