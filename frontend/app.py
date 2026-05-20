@@ -146,7 +146,7 @@ if st.button("Analyze Stock"):
     with st.spinner("Analyzing stock..."):
 
         response = requests.post(
-            "http://127.0.0.1:8000/analyze",
+            "https://finsight-ai.azurewebsites.net/analyze",
             json={
                 "ticker": ticker
             }
@@ -486,7 +486,7 @@ if stored_result:
         with st.spinner("Generating AI Report..."):
 
             report_response = requests.post(
-                "http://127.0.0.1:8000/generate-report",
+                "https://finsight-ai.azurewebsites.net/generate-report",
                 json={
                     "ticker": ticker
                 }
@@ -527,7 +527,7 @@ if stored_result:
     # ==========================================
 
     chart_response = requests.get(
-        f"http://127.0.0.1:8000/stock-chart/{ticker}"
+        f"https://finsight-ai.azurewebsites.net/stock-chart/{ticker}"
     )
 
     chart_data = chart_response.json()
@@ -585,7 +585,7 @@ if page == "Annual Report QA":
         ):
 
             response = requests.post(
-                "http://127.0.0.1:8000/upload-report",
+                "https://finsight-ai.azurewebsites.net/upload-report",
                 files=files
             )
 
@@ -630,7 +630,7 @@ if page == "Annual Report QA":
             ):
 
                 response = requests.get(
-                    "http://127.0.0.1:8000/rag-qa",
+                    "https://finsight-ai.azurewebsites.net/rag-qa",
                     params={
                         "query": prompt
                     }
