@@ -34,7 +34,7 @@ def generate_pdf_report(
 
     print("PDF REPORT GENERATION STARTED")
 
-    file_name = f"{ticker}_AI_Report.pdf"
+    file_name = f"reports/{ticker}_AI_Report.pdf"
 
     print("File name:", file_name)
 

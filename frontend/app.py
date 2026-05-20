@@ -507,6 +507,18 @@ if stored_result:
         st.json(
             st.session_state.report_result
         )
+        pdf_path = st.session_state.report_result.get("pdf_file")
+
+        if pdf_path:
+
+         with open(pdf_path, "rb") as pdf_file:
+
+          st.download_button(
+            label="⬇ Download Executive Report",
+            data=pdf_file,
+            file_name=pdf_path,
+            mime="application/pdf"
+        )
 
     st.divider()
 
