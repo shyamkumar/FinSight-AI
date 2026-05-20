@@ -4,6 +4,7 @@ import requests
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+BASE_API_URL = "https://finsight-ai-asgje4gjdjfydcfe.southindia-01.azurewebsites.net"
 
 if "analysis_result" not in st.session_state:
     st.session_state.analysis_result = {}
@@ -146,7 +147,7 @@ if st.button("Analyze Stock"):
     with st.spinner("Analyzing stock..."):
 
         response = requests.post(
-            "https://finsight-ai.azurewebsites.net/analyze",
+            f"{BASE_API_URL}/analyze",
             json={
                 "ticker": ticker
             }
@@ -486,7 +487,7 @@ if stored_result:
         with st.spinner("Generating AI Report..."):
 
             report_response = requests.post(
-                "https://finsight-ai.azurewebsites.net/generate-report",
+                f"{BASE_API_URL}/generate-report",
                 json={
                     "ticker": ticker
                 }
@@ -527,7 +528,7 @@ if stored_result:
     # ==========================================
 
     chart_response = requests.get(
-        f"https://finsight-ai.azurewebsites.net/stock-chart/{ticker}"
+            f"{BASE_API_URL}/stock-chart/{ticker}"
     )
 
     chart_data = chart_response.json()
@@ -585,7 +586,7 @@ if page == "Annual Report QA":
         ):
 
             response = requests.post(
-                "https://finsight-ai.azurewebsites.net/upload-report",
+                f"{BASE_API_URL}/upload-report",
                 files=files
             )
 
@@ -630,7 +631,7 @@ if page == "Annual Report QA":
             ):
 
                 response = requests.get(
-                    "https://finsight-ai.azurewebsites.net/rag-qa",
+                    f"{BASE_API_URL}/rag-qa",
                     params={
                         "query": prompt
                     }
