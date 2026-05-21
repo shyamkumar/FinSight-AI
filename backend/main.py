@@ -40,6 +40,7 @@ from backend.tools.ai_tools import (
 from backend.tools.report_generator import (
     generate_pdf_report
 )
+from fastapi.responses import FileResponse
 
 class StockRequest(BaseModel):
     ticker: str
@@ -324,11 +325,10 @@ def generate_report(request: StockRequest):
         print("PDF FILE:", pdf_file)
 
         return {
-
             "message": "Report generated successfully",
-
-            "pdf_file": pdf_file
-        }
+            "pdf_file": pdf_path,
+            "download_url": f"/download-report/{ticker}"
+      }
 
     except Exception as e:
 
@@ -340,3 +340,15 @@ def generate_report(request: StockRequest):
 
             "error": str(e)
         }
+    
+@app.get("/download-report/{ticker}")
+
+def download_report(ticker: str):
+
+    pdf_path = f"reports/{ticker}_AI_Report.pdf"
+
+    return FileResponse(
+        pdf_path,
+        media_type="application/pdf",
+        filename=f"{ticker}_AI_Report.pdf"
+    )

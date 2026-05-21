@@ -512,14 +512,13 @@ if stored_result:
 
         if pdf_path:
 
-         with open(pdf_path, "rb") as pdf_file:
+          download_url = (
+           f"{BASE_API_URL}/download-report/{ticker}"
+          )
 
-          st.download_button(
-            label="⬇ Download Executive Report",
-            data=pdf_file,
-            file_name=pdf_path,
-            mime="application/pdf"
-        )
+          st.markdown(
+            f"[📥 Download Executive Report]({download_url})"
+       )
 
     st.divider()
 
@@ -608,51 +607,70 @@ if page == "Annual Report QA":
 
     st.divider()
 
-    # ======================================
-    # SAMPLE QUESTIONS
-    # ======================================
+# ======================================
+# SAMPLE QUESTIONS
+# ======================================
 
-    sample_questions = [
+sample_questions = [
 
-        "What are the major financial risks?",
+    "What are the major financial risks?",
 
-        "Summarize the company's financial performance.",
+    "Summarize the company's financial performance.",
 
-        "What are the key revenue drivers?",
+    "What are the key revenue drivers?",
 
-        "What are the future growth opportunities?",
+    "What are the future growth opportunities?",
 
-        "What are the profitability concerns?",
+    "What are the profitability concerns?",
 
-        "What are the operational challenges?",
+    "What are the operational challenges?",
 
-        "What are the major business risks mentioned?",
+    "What are the major business risks mentioned?",
 
-        "Summarize management's future outlook.",
+    "Summarize management's future outlook.",
 
-        "What are the company's expansion plans?",
+    "What are the company's expansion plans?",
 
-        "What are the key strategic initiatives?",
+    "What are the key strategic initiatives?",
 
-        "What are the major investment risks?",
+    "What are the major investment risks?",
 
-        "How is the company performing financially?",
+    "How is the company performing financially?",
 
-        "What are the long-term market opportunities?",
+    "What are the long-term market opportunities?",
 
-        "What are the major cost pressures?",
+    "What are the major cost pressures?",
 
-        "What are the key takeaways for investors?"
+    "What are the key takeaways for investors?"
 
-    ]
+]
 
-    selected_question = st.selectbox(
+selected_question = st.selectbox(
 
-        "📌 Choose Sample Financial Question",
+    "📌 Choose Sample Financial Question",
 
-        sample_questions
+    sample_questions
 
-    )
+)
+
+use_sample_question = st.button(
+    "🚀 Ask Sample Question"
+)
+
+# ======================================
+# CHAT INPUT
+# ======================================
+
+prompt = st.chat_input(
+    "Ask questions about annual report"
+)
+
+# ======================================
+# HANDLE SAMPLE QUESTION
+# ======================================
+
+if use_sample_question:
+    prompt = selected_question
 
     # ======================================
     # AI CHAT
@@ -669,13 +687,6 @@ if page == "Annual Report QA":
     prompt = st.chat_input(
         "Ask questions about annual report"
     )
-
-    # ======================================
-    # USE SELECTED SAMPLE QUESTION
-    # ======================================
-
-    if not prompt:
-        prompt = selected_question
 
     # ======================================
     # AI RESPONSE
