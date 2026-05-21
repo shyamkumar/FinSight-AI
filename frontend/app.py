@@ -559,11 +559,19 @@ if stored_result:
 
 if page == "Annual Report QA":
 
+    # ======================================
+    # SESSION STATE
+    # ======================================
+
     if "pdf_uploaded" not in st.session_state:
         st.session_state.pdf_uploaded = False
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
+
+    # ======================================
+    # PDF UPLOAD
+    # ======================================
 
     st.subheader("📄 Upload Annual Report")
 
@@ -600,6 +608,56 @@ if page == "Annual Report QA":
 
     st.divider()
 
+    # ======================================
+    # SAMPLE QUESTIONS
+    # ======================================
+
+    sample_questions = [
+
+        "What are the major financial risks?",
+
+        "Summarize the company's financial performance.",
+
+        "What are the key revenue drivers?",
+
+        "What are the future growth opportunities?",
+
+        "What are the profitability concerns?",
+
+        "What are the operational challenges?",
+
+        "What are the major business risks mentioned?",
+
+        "Summarize management's future outlook.",
+
+        "What are the company's expansion plans?",
+
+        "What are the key strategic initiatives?",
+
+        "What are the major investment risks?",
+
+        "How is the company performing financially?",
+
+        "What are the long-term market opportunities?",
+
+        "What are the major cost pressures?",
+
+        "What are the key takeaways for investors?"
+
+    ]
+
+    selected_question = st.selectbox(
+
+        "📌 Choose Sample Financial Question",
+
+        sample_questions
+
+    )
+
+    # ======================================
+    # AI CHAT
+    # ======================================
+
     st.subheader("🤖 Financial AI Chat")
 
     for message in st.session_state.messages:
@@ -612,6 +670,17 @@ if page == "Annual Report QA":
         "Ask questions about annual report"
     )
 
+    # ======================================
+    # USE SELECTED SAMPLE QUESTION
+    # ======================================
+
+    if not prompt:
+        prompt = selected_question
+
+    # ======================================
+    # AI RESPONSE
+    # ======================================
+
     if prompt:
 
         st.session_state.messages.append(
@@ -622,6 +691,7 @@ if page == "Annual Report QA":
         )
 
         with st.chat_message("user"):
+
             st.markdown(prompt)
 
         with st.chat_message("assistant"):
@@ -639,7 +709,10 @@ if page == "Annual Report QA":
 
                 result = response.json()
 
-                answer = result["answer"]
+                answer = result.get(
+                    "answer",
+                    "No answer generated."
+                )
 
                 st.markdown(answer)
 
@@ -648,7 +721,7 @@ if page == "Annual Report QA":
                 ):
 
                     for idx, source in enumerate(
-                        result["sources"]
+                        result.get("sources", [])
                     ):
 
                         st.write(
