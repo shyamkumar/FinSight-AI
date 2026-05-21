@@ -1,3 +1,4 @@
+import os
 from reportlab.platypus import (
     SimpleDocTemplate,
     Paragraph,
@@ -33,7 +34,7 @@ def generate_pdf_report(
 ):
 
     print("PDF REPORT GENERATION STARTED")
-
+    os.makedirs("reports", exist_ok=True)
     file_name = f"reports/{ticker}_AI_Report.pdf"
 
     print("File name:", file_name)
