@@ -726,8 +726,15 @@ if page == "Annual Report QA":
                 st.markdown(answer)
 
                 with st.expander(
-                    "📚 View Retrieved Sources"
+                     "🧠 Multi-Agent Execution Flow"
                 ):
+
+                    for step in result.get(
+                        "agent_flow",
+                     []
+                   ):
+
+                     st.success(step)
 
                     for idx, source in enumerate(
                         result.get("sources", [])
