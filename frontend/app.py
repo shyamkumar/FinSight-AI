@@ -605,67 +605,55 @@ if page == "Annual Report QA":
 
     st.divider()
 
-# ======================================
-# SAMPLE QUESTIONS
-# ======================================
+    # ======================================
+    # SAMPLE QUESTIONS
+    # ======================================
 
-sample_questions = [
+    sample_questions = [
 
-    "What are the major financial risks?",
+        "What are the major financial risks?",
 
-    "Summarize the company's financial performance.",
+        "Summarize the company's financial performance.",
 
-    "What are the key revenue drivers?",
+        "What are the key revenue drivers?",
 
-    "What are the future growth opportunities?",
+        "What are the future growth opportunities?",
 
-    "What are the profitability concerns?",
+        "What are the profitability concerns?",
 
-    "What are the operational challenges?",
+        "What are the operational challenges?",
 
-    "What are the major business risks mentioned?",
+        "What are the major business risks mentioned?",
 
-    "Summarize management's future outlook.",
+        "Summarize management's future outlook.",
 
-    "What are the company's expansion plans?",
+        "What are the company's expansion plans?",
 
-    "What are the key strategic initiatives?",
+        "What are the key strategic initiatives?",
 
-    "What are the major investment risks?",
+        "What are the major investment risks?",
 
-    "How is the company performing financially?",
+        "How is the company performing financially?",
 
-    "What are the long-term market opportunities?",
+        "What are the long-term market opportunities?",
 
-    "What are the major cost pressures?",
+        "What are the major cost pressures?",
 
-    "What are the key takeaways for investors?"
+        "What are the key takeaways for investors?"
 
-]
+    ]
 
-selected_question = st.selectbox(
+    selected_question = st.selectbox(
 
-    "📌 Choose Sample Financial Question",
+        "📌 Choose Sample Financial Question",
 
-    sample_questions
+        sample_questions
 
-)
+    )
 
-use_sample_question = st.button(
-    "🚀 Ask Sample Question"
-)
-
-user_prompt = st.chat_input(
-    "Ask questions about annual report"
-)
-
-prompt = None
-
-if use_sample_question:
-    prompt = selected_question
-
-elif user_prompt:
-    prompt = user_prompt
+    use_sample_question = st.button(
+        "🚀 Ask Sample Question"
+    )
 
     # ======================================
     # AI CHAT
@@ -679,10 +667,24 @@ elif user_prompt:
 
             st.markdown(message["content"])
 
-    prompt = st.chat_input(
-    "Ask questions about annual report",
-    key="annual_report_chat_input"
-   )
+    user_prompt = st.chat_input(
+        "Ask questions about annual report",
+        key="annual_report_chat_input"
+    )
+
+    prompt = None
+
+    # ======================================
+    # HANDLE QUESTIONS
+    # ======================================
+
+    if use_sample_question:
+
+        prompt = selected_question
+
+    elif user_prompt:
+
+        prompt = user_prompt
 
     # ======================================
     # AI RESPONSE
