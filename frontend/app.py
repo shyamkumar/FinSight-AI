@@ -501,23 +501,21 @@ if stored_result:
 
     if st.session_state.report_generated:
 
-        st.success(
-            "Executive AI Report Generated"
-        )
+       st.success(
+        "Executive AI Report Generated"
+       )
 
-        st.json(
-            st.session_state.report_result
-        )
-        pdf_path = st.session_state.report_result.get("pdf_file")
+       st.json(
+        st.session_state.report_result
+       )
 
-        if pdf_path:
+       download_url = (
+        f"{BASE_API_URL}/download-report/{ticker}"
+       )
 
-          download_url = (
-           f"{BASE_API_URL}/download-report/{ticker}"
-          )
-
-          st.markdown(
-            f"[📥 Download Executive Report]({download_url})"
+       st.link_button(
+        "📥 Download Executive Report",
+        download_url
        )
 
     st.divider()
@@ -657,20 +655,17 @@ use_sample_question = st.button(
     "🚀 Ask Sample Question"
 )
 
-# ======================================
-# CHAT INPUT
-# ======================================
-
-prompt = st.chat_input(
+user_prompt = st.chat_input(
     "Ask questions about annual report"
 )
 
-# ======================================
-# HANDLE SAMPLE QUESTION
-# ======================================
+prompt = None
 
 if use_sample_question:
     prompt = selected_question
+
+elif user_prompt:
+    prompt = user_prompt
 
     # ======================================
     # AI CHAT
