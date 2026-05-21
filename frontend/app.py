@@ -680,8 +680,9 @@ elif user_prompt:
             st.markdown(message["content"])
 
     prompt = st.chat_input(
-        "Ask questions about annual report"
-    )
+    "Ask questions about annual report",
+    key="annual_report_chat_input"
+   )
 
     # ======================================
     # AI RESPONSE
