@@ -49,42 +49,83 @@ app = FastAPI()
 
 
 @app.post("/analyze")
+
 def analyze_stock(request: StockRequest):
+
+    # ==================================
+    # GET STOCK INFO
+    # ==================================
 
     stock_data = get_stock_info(
         request.ticker
     )
 
-    ratios = get_financial_ratios(
+    # ==================================
+    # GET RESOLVED TICKER
+    # ==================================
+
+    resolved_ticker = stock_data.get(
+        "ticker",
         request.ticker
     )
+
+    # ==================================
+    # GET FINANCIAL RATIOS
+    # ==================================
+
+    ratios = get_financial_ratios(
+        resolved_ticker
+    )
+
     print(ratios)
 
+    # ==================================
+    # GENERATE AI ANALYSIS
+    # ==================================
 
     analysis = generate_stock_analysis(
-        request.ticker,
+
+        resolved_ticker,
+
         stock_data,
+
         ratios
     )
+
+    # ==================================
+    # AI SCORE
+    # ==================================
+
     ai_scores = generate_ai_score(
-    analysis
+        analysis
     )
+
+    # ==================================
+    # MULTI AGENT ANALYSIS
+    # ==================================
+
     multi_agent = generate_multi_agent_analysis(
-    analysis
-   )
+        analysis
+    )
+
+    # ==================================
+    # FINAL RESPONSE
+    # ==================================
 
     return {
 
-    "ticker": request.ticker,
+        "ticker": request.ticker,
 
-    "analysis": analysis,
+        "resolved_ticker": resolved_ticker,
 
-    "metrics": ratios,
+        "analysis": analysis,
 
-    "ai_scores": ai_scores,
+        "metrics": ratios,
 
-    "multi_agent": multi_agent
-}
+        "ai_scores": ai_scores,
+
+        "multi_agent": multi_agent
+    }
 
 @app.get("/")
 def home():
