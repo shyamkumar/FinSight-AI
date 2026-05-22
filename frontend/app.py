@@ -134,9 +134,12 @@ st.divider()
 if page == "Stock Analysis":
 
     ticker = st.text_input(
-        "Enter Stock Ticker",
-        placeholder="Example: NVDA"
-    )
+
+    "Enter Company Name or Stock Ticker",
+
+    placeholder="Example: Tesla, NVIDIA, TCS, Reliance"
+
+)
 
 # ==========================================
 # ANALYZE BUTTON
@@ -166,6 +169,14 @@ stored_result = st.session_state.get(
     {}
 )
 
+resolved_ticker = stored_result.get(
+    "resolved_ticker",
+    ticker
+)
+
+st.success(
+    f"Detected Ticker: {resolved_ticker}"
+)
 if stored_result:
 
     analysis = stored_result.get(
@@ -532,13 +543,28 @@ if stored_result:
 
     if isinstance(chart_data, list):
 
-        df = pd.DataFrame(chart_data)
+      df = pd.DataFrame(chart_data)
+
+      # ==============================
+      # VALIDATE DATAFRAME
+      # ==============================
+
+      if (
+        not df.empty
+        and "Date" in df.columns
+        and "Close" in df.columns
+    ):
 
         fig = px.line(
+
             df,
+
             x="Date",
+
             y="Close",
-            title=f"{ticker} Stock Price (6 Months)"
+
+            title=f"{resolved_ticker} Stock Price (6 Months)"
+
         )
 
         st.plotly_chart(
@@ -548,7 +574,15 @@ if stored_result:
 
     else:
 
-        st.error("Chart data invalid")
+        st.warning(
+            "Stock chart data unavailable."
+        )
+
+else:
+
+    st.error(
+        "Chart data invalid"
+    )
 
 # ==========================================
 # ANNUAL REPORT QA PAGE
