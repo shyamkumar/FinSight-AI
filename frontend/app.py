@@ -135,465 +135,223 @@ if page == "Stock Analysis":
 
     ticker = st.text_input(
 
-    "Enter Company Name or Stock Ticker",
+        "Enter Company Name or Stock Ticker",
 
-    placeholder="Example: Tesla, NVIDIA, TCS, Reliance"
+        placeholder="Example: Tesla, NVIDIA, TCS, Reliance"
 
-)
-
-# ==========================================
-# ANALYZE BUTTON
-# ==========================================
-
-if st.button("Analyze Stock"):
-
-    with st.spinner("Analyzing stock..."):
-
-        response = requests.post(
-            f"{BASE_API_URL}/analyze",
-            json={
-                "ticker": ticker
-            }
-        )
-
-        if response.status_code == 200:
-
-          result = response.json()
-
-        else:
-
-          st.error(
-          f"Backend Error: {response.text}"
-        )
-
-        st.stop()
-
-        st.session_state.analysis_result = result
-
-# ==========================================
-# LOAD STORED ANALYSIS
-# ==========================================
-
-stored_result = st.session_state.get(
-    "analysis_result",
-    {}
-)
-
-resolved_ticker = stored_result.get(
-    "resolved_ticker",
-    ticker
-)
-
-st.success(
-    f"Detected Ticker: {resolved_ticker}"
-)
-if stored_result:
-
-    analysis = stored_result.get(
-        "analysis",
-        {}
     )
 
-    metrics = stored_result.get(
-        "metrics",
-        {}
-    )
+    # ======================================
+    # ANALYZE BUTTON
+    # ======================================
 
-    ai_scores = stored_result.get(
-        "ai_scores",
-        {}
-    )
+    if st.button("Analyze Stock"):
 
-    multi_agent = stored_result.get(
-        "multi_agent",
-        {}
-    )
+        with st.spinner("Analyzing stock..."):
 
-    st.success("Analysis Complete")
+            response = requests.post(
 
-    # ==========================================
-    # KPI DASHBOARD
-    # ==========================================
+                f"{BASE_API_URL}/analyze",
 
-    st.subheader("📊 Financial KPI Dashboard")
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-
-        st.metric(
-            "Market Cap",
-            f"${round(metrics.get('marketCap', 0)/1e12, 2)}T"
-            if metrics.get("marketCap")
-            else "N/A"
-        )
-
-    with col2:
-
-        st.metric(
-            "Trailing P/E",
-            round(metrics.get("trailingPE", 0), 2)
-            if metrics.get("trailingPE")
-            else "N/A"
-        )
-
-    with col3:
-
-        st.metric(
-            "Profit Margin",
-            f"{round(metrics.get('profitMargins', 0)*100, 2)}%"
-            if metrics.get("profitMargins")
-            else "N/A"
-        )
-
-    with col4:
-
-        st.metric(
-            "Revenue Growth",
-            f"{round(metrics.get('revenueGrowth', 0)*100, 2)}%"
-            if metrics.get("revenueGrowth")
-            else "N/A"
-        )
-
-    st.divider()
-
-    # ==========================================
-    # AI SIGNALS
-    # ==========================================
-
-    st.subheader("🤖 AI Investment Signals")
-
-    ai_score = ai_scores.get("ai_score", 0)
-
-    fig_gauge = go.Figure(
-
-        go.Indicator(
-
-            mode="gauge+number",
-
-            value=ai_score,
-
-            title={
-                "text": "AI Investment Score"
-            },
-
-            gauge={
-
-                "axis": {
-                    "range": [0, 100]
-                },
-
-                "bar": {
-                    "color": "darkblue"
-                },
-
-                "steps": [
-
-                    {
-                        "range": [0, 40],
-                        "color": "#ffcccc"
-                    },
-
-                    {
-                        "range": [40, 70],
-                        "color": "#fff4cc"
-                    },
-
-                    {
-                        "range": [70, 100],
-                        "color": "#ccffcc"
-                    }
-                ]
-            }
-        )
-    )
-
-    st.plotly_chart(
-        fig_gauge,
-        use_container_width=True
-    )
-
-    # ==========================================
-    # AI SIGNAL METRICS
-    # ==========================================
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-
-        st.metric(
-            "AI Score",
-            f"{ai_scores.get('ai_score', 0)}/100"
-        )
-
-    with col2:
-
-        st.metric(
-            "Market Sentiment",
-            ai_scores.get("sentiment", "N/A")
-        )
-
-    with col3:
-
-        st.metric(
-            "Risk Level",
-            ai_scores.get("risk_level", "N/A")
-        )
-
-    with col4:
-
-        st.metric(
-            "AI Confidence",
-            f"{ai_scores.get('confidence', 0)}%"
-        )
-
-    st.divider()
-
-    # ==========================================
-    # COMPANY OVERVIEW
-    # ==========================================
-
-    st.subheader("🏢 Company Overview")
-
-    st.write(
-        analysis.get(
-            "company_overview",
-            "N/A"
-        )
-    )
-
-    # ==========================================
-    # BULLISH VS BEARISH
-    # ==========================================
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        st.subheader("📈 Bullish Factors")
-
-        for item in analysis.get(
-            "bullish_factors",
-            []
-        ):
-
-            st.success(item)
-
-    with col2:
-
-        st.subheader("⚠️ Bearish Factors")
-
-        for item in analysis.get(
-            "bearish_factors",
-            []
-        ):
-
-            st.error(item)
-
-    st.divider()
-
-    # ==========================================
-    # RISK ANALYSIS
-    # ==========================================
-
-    st.subheader("📉 Risk Analysis")
-
-    st.write(
-        analysis.get(
-            "risk_analysis",
-            "N/A"
-        )
-    )
-
-    # ==========================================
-    # LONG TERM OUTLOOK
-    # ==========================================
-
-    st.subheader("🚀 Long-Term Outlook")
-
-    st.write(
-        analysis.get(
-            "long_term_outlook",
-            "N/A"
-        )
-    )
-
-    # ==========================================
-    # RECOMMENDATION
-    # ==========================================
-
-    st.subheader("💡 Recommendation")
-
-    st.info(
-        analysis.get(
-            "recommendation",
-            "N/A"
-        )
-    )
-
-    st.divider()
-
-    # ==========================================
-    # MULTI AGENT AI WORKSPACE
-    # ==========================================
-
-    st.subheader("🤖 Multi-Agent AI Workspace")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        st.markdown("### 🐂 Bull Agent")
-
-        st.success(
-            multi_agent.get(
-                "bull_agent",
-                "N/A"
-            )
-        )
-
-    with col2:
-
-        st.markdown("### 🐻 Bear Agent")
-
-        st.error(
-            multi_agent.get(
-                "bear_agent",
-                "N/A"
-            )
-        )
-
-    col3, col4 = st.columns(2)
-
-    with col3:
-
-        st.markdown("### ⚠️ Risk Agent")
-
-        st.warning(
-            multi_agent.get(
-                "risk_agent",
-                "N/A"
-            )
-        )
-
-    with col4:
-
-        st.markdown("### 📊 Research Agent")
-
-        st.info(
-            multi_agent.get(
-                "research_agent",
-                "N/A"
-            )
-        )
-
-    st.divider()
-
-    # ==========================================
-    # EXECUTIVE REPORT
-    # ==========================================
-
-    st.subheader("📄 Executive AI Report")
-
-    if "report_generated" not in st.session_state:
-
-        st.session_state.report_generated = False
-
-    if "report_result" not in st.session_state:
-
-        st.session_state.report_result = {}
-
-    if st.button("Generate Executive AI Report"):
-
-        with st.spinner("Generating AI Report..."):
-
-            report_response = requests.post(
-                f"{BASE_API_URL}/generate-report",
                 json={
                     "ticker": ticker
                 }
+
             )
 
-            report_result = report_response.json()
+            if response.status_code == 200:
 
-            st.session_state.report_generated = True
+                result = response.json()
 
-            st.session_state.report_result = report_result
+                st.session_state.analysis_result = result
 
-    if st.session_state.report_generated:
+            else:
 
-       st.success(
-        "Executive AI Report Generated"
-       )
+                st.error(
+                    f"Backend Error: {response.text}"
+                )
 
-       st.json(
-        st.session_state.report_result
-       )
+                st.stop()
 
-       download_url = (
-        f"{BASE_API_URL}/download-report/{ticker}"
-       )
+    # ======================================
+    # LOAD STORED ANALYSIS
+    # ======================================
 
-       st.link_button(
-        "📥 Download Executive Report",
-        download_url
-       )
-
-    st.divider()
-
-    # ==========================================
-    # STOCK CHART
-    # ==========================================
-
-    chart_response = requests.get(
-            f"{BASE_API_URL}/stock-chart/{ticker}"
+    stored_result = st.session_state.get(
+        "analysis_result",
+        {}
     )
 
-    chart_data = chart_response.json()
+    # ======================================
+    # SHOW RESULTS ONLY IF AVAILABLE
+    # ======================================
 
-    if isinstance(chart_data, list):
+    if stored_result:
 
-      df = pd.DataFrame(chart_data)
+        resolved_ticker = stored_result.get(
+            "resolved_ticker",
+            ticker
+        )
 
-      # ==============================
-      # VALIDATE DATAFRAME
-      # ==============================
+        st.success(
+            f"Detected Ticker: {resolved_ticker}"
+        )
 
-      if (
-        not df.empty
-        and "Date" in df.columns
-        and "Close" in df.columns
-        ):
+        analysis = stored_result.get(
+            "analysis",
+            {}
+        )
 
-        fig = px.line(
+        metrics = stored_result.get(
+            "metrics",
+            {}
+        )
 
-            df,
+        ai_scores = stored_result.get(
+            "ai_scores",
+            {}
+        )
 
-            x="Date",
+        multi_agent = stored_result.get(
+            "multi_agent",
+            {}
+        )
 
-            y="Close",
+        st.success("Analysis Complete")
 
-            title=f"{resolved_ticker} Stock Price (6 Months)"
+        # ======================================
+        # KPI DASHBOARD
+        # ======================================
+
+        st.subheader("📊 Financial KPI Dashboard")
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+
+            st.metric(
+
+                "Market Cap",
+
+                f"${round(metrics.get('marketCap', 0)/1e12, 2)}T"
+
+                if metrics.get("marketCap")
+
+                else "N/A"
+
+            )
+
+        with col2:
+
+            st.metric(
+
+                "Trailing P/E",
+
+                round(metrics.get("trailingPE", 0), 2)
+
+                if metrics.get("trailingPE")
+
+                else "N/A"
+
+            )
+
+        with col3:
+
+            st.metric(
+
+                "Profit Margin",
+
+                f"{round(metrics.get('profitMargins', 0)*100, 2)}%"
+
+                if metrics.get("profitMargins")
+
+                else "N/A"
+
+            )
+
+        with col4:
+
+            st.metric(
+
+                "Revenue Growth",
+
+                f"{round(metrics.get('revenueGrowth', 0)*100, 2)}%"
+
+                if metrics.get("revenueGrowth")
+
+                else "N/A"
+
+            )
+
+        st.divider()
+
+        # ======================================
+        # STOCK CHART
+        # ======================================
+
+        st.subheader("📈 Stock Price Trend")
+
+        chart_response = requests.get(
+
+            f"{BASE_API_URL}/stock-chart/{resolved_ticker}"
 
         )
 
-        st.plotly_chart(
-            fig,
-            use_container_width=True
-        )
+        if chart_response.status_code == 200:
 
-    else:
+            chart_data = chart_response.json()
 
-        st.warning(
-            "Stock chart data unavailable."
-        )
+            if isinstance(chart_data, list):
 
-else:
+                df = pd.DataFrame(chart_data)
 
-    st.error(
-        "Chart data invalid"
-    )
+                if (
 
+                    not df.empty
+
+                    and "Date" in df.columns
+
+                    and "Close" in df.columns
+
+                ):
+
+                    fig = px.line(
+
+                        df,
+
+                        x="Date",
+
+                        y="Close",
+
+                        title=f"{resolved_ticker} Stock Price (6 Months)"
+
+                    )
+
+                    st.plotly_chart(
+
+                        fig,
+
+                        use_container_width=True
+
+                    )
+
+                else:
+
+                    st.warning(
+                        "Stock chart data unavailable."
+                    )
+
+            else:
+
+                st.warning(
+                    "Invalid stock chart data."
+                )
+
+        else:
+
+            st.warning(
+                "Unable to load stock chart."
+            )
 # ==========================================
 # ANNUAL REPORT QA PAGE
 # ==========================================

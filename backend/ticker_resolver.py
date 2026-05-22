@@ -1,31 +1,55 @@
-import yfinance as yf
+import requests
 
 
 def resolve_ticker(company_name: str):
 
     try:
 
-        search = yf.Search(
-            company_name
+        url = (
+            "https://query1.finance.yahoo.com"
+            "/v1/finance/search"
         )
 
-        quotes = search.quotes
+        params = {
+            "q": company_name,
+            "quotesCount": 1,
+            "newsCount": 0
+        }
 
-        print("SEARCH RESULTS:")
-        print(quotes)
+        response = requests.get(
+            url,
+            params=params,
+            timeout=5
+        )
 
-        if quotes and len(quotes) > 0:
+        data = response.json()
 
-            return quotes[0].get(
-                "symbol",
-                company_name.upper()
+        quotes = data.get(
+            "quotes",
+            []
+        )
+
+        if quotes:
+
+            symbol = quotes[0].get(
+                "symbol"
             )
+
+            print(
+                "Resolved Ticker:",
+                symbol
+            )
+
+            return symbol
 
         return company_name.upper()
 
     except Exception as e:
 
-        print("TICKER RESOLUTION ERROR:")
+        print(
+            "Ticker Resolver Error:"
+        )
+
         print(e)
 
         return company_name.upper()
