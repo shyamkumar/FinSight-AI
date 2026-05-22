@@ -168,10 +168,6 @@ if page == "Stock Analysis":
 
             )
 
-            # ==============================
-            # SUCCESS RESPONSE
-            # ==============================
-
             if response.status_code == 200:
 
                 result = response.json()
@@ -187,10 +183,6 @@ if page == "Stock Analysis":
                 st.session_state.analysis_result = (
                     result
                 )
-
-            # ==============================
-            # BACKEND ERROR
-            # ==============================
 
             else:
 
@@ -227,16 +219,11 @@ if page == "Stock Analysis":
 
         )
 
-        st.success(
-            f"Detected Ticker: "
-            f"{resolved_ticker}"
-        )
-
         analysis = stored_result.get(
 
             "analysis",
 
-            ""
+            {}
 
         )
 
@@ -262,6 +249,11 @@ if page == "Stock Analysis":
 
             {}
 
+        )
+
+        st.success(
+            f"Detected Ticker: "
+            f"{resolved_ticker}"
         )
 
         st.success(
@@ -454,66 +446,63 @@ if page == "Stock Analysis":
 
         if isinstance(analysis, dict):
 
-         st.markdown(
-              f"""
-              ### 🏢 Company Overview
-              {analysis.get('company_overview', 'N/A')}
+            st.markdown(
+                f"""
+### 🏢 Company Overview
+{analysis.get('company_overview', 'N/A')}
 
-              ---
+---
 
-              ### 📈 Bullish Factors
-              """
-    )
+### 🚨 Risk Analysis
+{analysis.get('risk_analysis', 'N/A')}
 
-        bullish = analysis.get(
-        "bullish_factors",
-        []
-        )
+---
 
-        for item in bullish:
+### 🔮 Long-Term Outlook
+{analysis.get('long_term_outlook', 'N/A')}
 
-         st.markdown(f"- {item}")
+---
 
-        st.markdown(
-        """
-        ---
+### 💡 Investment Recommendation
+{analysis.get('recommendation', 'N/A')}
+"""
+            )
 
-        ### ⚠️ Bearish Factors
-    """
-    )
+            st.markdown(
+                "### 📈 Bullish Factors"
+            )
 
-        bearish = analysis.get(
-        "bearish_factors",
-        []
-        )
+            bullish = analysis.get(
+                "bullish_factors",
+                []
+            )
 
-        for item in bearish:
+            for item in bullish:
 
-         st.markdown(f"- {item}")
+                st.markdown(
+                    f"- {item}"
+                )
 
-        st.markdown(
-        f"""
-        ---
+            st.markdown(
+                "### ⚠️ Bearish Factors"
+            )
 
-        ### 🚨 Risk Analysis
-       {analysis.get('risk_analysis', 'N/A')}
+            bearish = analysis.get(
+                "bearish_factors",
+                []
+            )
 
-        ---
+            for item in bearish:
 
-        ### 🔮 Long-Term Outlook
-       {analysis.get('long_term_outlook', 'N/A')}
+                st.markdown(
+                    f"- {item}"
+                )
 
-        ---
+        else:
 
-        ### 💡 Investment Recommendation
-       {analysis.get('recommendation', 'N/A')}
-       """
-      )
-
-    else:
-
-        st.markdown(analysis)
-
+            st.markdown(
+                analysis
+            )
 
         st.divider()
 
@@ -571,7 +560,7 @@ if page == "Stock Analysis":
         st.divider()
 
         # ======================================
-        # MULTI AGENT AI ANALYSIS
+        # MULTI AGENT ANALYSIS
         # ======================================
 
         st.subheader(
@@ -625,9 +614,7 @@ if page == "Stock Analysis":
 
                     json={
 
-                        "ticker": resolved_ticker,
-
-                        "analysis": analysis
+                        "ticker": resolved_ticker
 
                     }
 
@@ -648,10 +635,6 @@ if page == "Stock Analysis":
 
                         "Executive AI Report Generated"
 
-                    )
-
-                    st.json(
-                        report_result
                     )
 
                     download_url = (
