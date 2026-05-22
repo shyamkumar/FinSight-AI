@@ -156,7 +156,17 @@ if st.button("Analyze Stock"):
             }
         )
 
-        result = response.json()
+        if response.status_code == 200:
+
+          result = response.json()
+
+        else:
+
+          st.error(
+          f"Backend Error: {response.text}"
+        )
+
+        st.stop()
 
         st.session_state.analysis_result = result
 
@@ -553,7 +563,7 @@ if stored_result:
         not df.empty
         and "Date" in df.columns
         and "Close" in df.columns
-    ):
+        ):
 
         fig = px.line(
 

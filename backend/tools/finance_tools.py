@@ -24,6 +24,22 @@ def get_stock_info(ticker: str):
     )
 
     info = stock.info
+    if not info:
+
+        return {
+
+        "ticker": resolved_ticker,
+
+        "company": "Unknown",
+
+        "sector": "N/A",
+
+        "industry": "N/A",
+
+        "market_cap": 0,
+
+        "current_price": 0
+       }
 
     current_price = info.get(
         "currentPrice"
