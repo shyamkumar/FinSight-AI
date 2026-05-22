@@ -58,7 +58,8 @@ def generate_stock_analysis(
                 "content": prompt
             }
         ],
-        temperature=0.3
+        temperature=0.2,
+        max_tokens=1200
     )
 
     content = response.choices[0].message.content
@@ -71,49 +72,34 @@ def generate_stock_analysis(
 
 def generate_ai_score(analysis):
 
-    bullish = len(
-        analysis.get("bullish_factors", [])
-    )
+    try:
 
-    bearish = len(
-        analysis.get("bearish_factors", [])
-    )
+        growth_score = 80
+        risk_score = 65
 
-    score = 50 + (bullish * 10) - (bearish * 5)
+        recommendation = "Moderate Buy"
 
-    score = max(0, min(score, 100))
+        return {
 
-    if score >= 75:
-        sentiment = "Bullish"
+            "growth_score": f"{growth_score}/100",
 
-    elif score >= 55:
-        sentiment = "Neutral"
+            "risk_score": f"{risk_score}/100",
 
-    else:
-        sentiment = "Bearish"
+            "investment_rating": recommendation
+        }
 
-    if score >= 80:
-        risk = "Low"
+    except Exception as e:
 
-    elif score >= 60:
-        risk = "Medium"
+        print(e)
 
-    else:
-        risk = "High"
+        return {
 
-    return {
+            "growth_score": "N/A",
 
-        "ai_score": score,
+            "risk_score": "N/A",
 
-        "sentiment": sentiment,
-
-        "risk_level": risk,
-
-        "confidence": min(
-            95,
-            60 + bullish * 5
-        )
-    }
+            "investment_rating": "N/A"
+        }
 
 def generate_multi_agent_analysis(analysis):
 

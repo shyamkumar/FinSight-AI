@@ -50,18 +50,22 @@ def generate_rag_answer(query: str):
     # ==================================
 
     prompt = f"""
-You are an elite financial research analyst and investment advisor.
 
-Your task is to analyze annual report data and provide institutional-grade financial insights.
+You are a senior Wall Street financial analyst and AI research assistant.
+
+Your task is to analyze annual report information and provide
+high-quality investor-focused insights.
 
 STRICT RULES:
-- Use ONLY the provided annual report context
-- Do NOT hallucinate information
-- If information is unavailable, clearly say so
-- Provide clear financial reasoning
-- Use professional investment language
-- Be concise but insightful
-- Return response in professional markdown format
+
+1. Use ONLY the provided annual report context.
+2. Do NOT hallucinate or invent information.
+3. If information is unavailable, explicitly say:
+   "The annual report does not provide sufficient information."
+4. Provide concise but insightful financial reasoning.
+5. Focus on investor implications and business impact.
+6. Mention risks, opportunities, and strategic insights.
+7. Use structured formatting.
 
 USER QUESTION:
 {query}
@@ -69,28 +73,26 @@ USER QUESTION:
 ANNUAL REPORT CONTEXT:
 {context}
 
-Generate a structured response with:
+Provide response in this format:
 
-1. Executive Summary
-- Brief answer to the question
+## Concise Explanation
+- Direct answer to the question.
 
-2. Financial/Business Insights
-- Key business observations
-- Revenue/profitability insights
-- Operational observations
+## Financial & Business Insights
+- Revenue/profitability implications
+- Operational/business insights
+- Market or industry implications
+- Strategic observations
 
-3. Risk Analysis
+## Risks & Concerns
 - Financial risks
 - Operational risks
-- Market/regulatory risks
+- Market risks
+- Regulatory or macroeconomic risks
 
-4. Investment Perspective
-- Investor implications
-- Long-term outlook
-- Strategic impact
+## Investor Takeaway
+- Key takeaway for investors or analysts.
 
-5. Final Recommendation
-- Concise concluding insight
 """
 
     # ==================================
@@ -104,13 +106,28 @@ Generate a structured response with:
         messages=[
 
             {
-                "role": "system",
-                "content": (
-                    "You are a world-class "
-                    "financial analyst and "
-                    "investment advisor."
-                )
-            },
+              "role": "system",
+
+              "content": """
+
+            You are an elite financial research analyst specializing in:
+            - equity research
+            - annual report analysis
+            - financial statement interpretation
+            - investor risk analysis
+            - strategic business analysis
+
+            You provide:
+            - factual responses
+            - investor-focused insights
+            - concise reasoning
+            - risk-aware analysis
+
+            Never hallucinate data.
+            Always rely only on provided context.
+
+            """
+     },
 
             {
                 "role": "user",
@@ -120,6 +137,7 @@ Generate a structured response with:
         ],
 
         temperature=0.2
+        max_tokens=1200
     )
 
     # ==================================

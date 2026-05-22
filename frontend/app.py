@@ -452,9 +452,68 @@ if page == "Stock Analysis":
             "🧠 Executive AI Summary"
         )
 
-        st.markdown(
-            analysis
+        if isinstance(analysis, dict):
+
+         st.markdown(
+              f"""
+              ### 🏢 Company Overview
+              {analysis.get('company_overview', 'N/A')}
+
+              ---
+
+              ### 📈 Bullish Factors
+              """
+    )
+
+        bullish = analysis.get(
+        "bullish_factors",
+        []
         )
+
+        for item in bullish:
+
+         st.markdown(f"- {item}")
+
+        st.markdown(
+        """
+        ---
+
+        ### ⚠️ Bearish Factors
+    """
+    )
+
+        bearish = analysis.get(
+        "bearish_factors",
+        []
+        )
+
+        for item in bearish:
+
+         st.markdown(f"- {item}")
+
+        st.markdown(
+        f"""
+        ---
+
+        ### 🚨 Risk Analysis
+       {analysis.get('risk_analysis', 'N/A')}
+
+        ---
+
+        ### 🔮 Long-Term Outlook
+       {analysis.get('long_term_outlook', 'N/A')}
+
+        ---
+
+        ### 💡 Investment Recommendation
+       {analysis.get('recommendation', 'N/A')}
+       """
+      )
+
+    else:
+
+        st.markdown(analysis)
+
 
         st.divider()
 

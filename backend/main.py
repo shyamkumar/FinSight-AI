@@ -366,10 +366,14 @@ def generate_report(request: StockRequest):
         print("PDF FILE:", pdf_file)
 
         return {
-            "message": "Report generated successfully",
-            "pdf_file": pdf_path,
-            "download_url": f"/download-report/{ticker}"
-      }
+
+          "message": "Report generated successfully",
+
+          "pdf_file": pdf_file,
+
+          "download_url":
+          f"/download-report/{request.ticker}"
+       }
 
     except Exception as e:
 
