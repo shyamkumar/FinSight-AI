@@ -1,6 +1,6 @@
 import yfinance as yf
 
-from backend.utils.ticker_resolver import (
+from backend.ticker_resolver import (
     resolve_ticker
 )
 
