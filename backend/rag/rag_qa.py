@@ -136,7 +136,7 @@ Provide response in this format:
 
         ],
 
-        temperature=0.2
+        temperature=0.2,
         max_tokens=1200
     )
 
