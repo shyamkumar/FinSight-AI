@@ -11,16 +11,32 @@ def resolve_ticker(company_name: str):
         )
 
         params = {
+
             "q": company_name,
+
             "quotesCount": 1,
+
             "newsCount": 0
         }
 
+        headers = {
+            "User-Agent": "Mozilla/5.0"
+        }
+
         response = requests.get(
+
             url,
+
             params=params,
-            timeout=5
+
+            headers=headers,
+
+            timeout=10
         )
+
+        if response.status_code != 200:
+
+            return company_name.upper()
 
         data = response.json()
 
@@ -31,24 +47,14 @@ def resolve_ticker(company_name: str):
 
         if quotes:
 
-            symbol = quotes[0].get(
-                "symbol"
+            return quotes[0].get(
+                "symbol",
+                company_name.upper()
             )
-
-            print(
-                "Resolved Ticker:",
-                symbol
-            )
-
-            return symbol
 
         return company_name.upper()
 
     except Exception as e:
-
-        print(
-            "Ticker Resolver Error:"
-        )
 
         print(e)
 
