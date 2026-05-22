@@ -133,11 +133,18 @@ st.divider()
 
 if page == "Stock Analysis":
 
+    # ======================================
+    # INPUT
+    # ======================================
+
     ticker = st.text_input(
 
         "Enter Company Name or Stock Ticker",
 
-        placeholder="Example: Tesla, NVIDIA, TCS, Reliance"
+        placeholder=(
+            "Example: Tesla, NVIDIA, "
+            "TCS, Reliance"
+        )
 
     )
 
@@ -147,7 +154,9 @@ if page == "Stock Analysis":
 
     if st.button("Analyze Stock"):
 
-        with st.spinner("Analyzing stock..."):
+        with st.spinner(
+            "Analyzing stock..."
+        ):
 
             response = requests.post(
 
@@ -159,73 +168,117 @@ if page == "Stock Analysis":
 
             )
 
+            # ==============================
+            # SUCCESS RESPONSE
+            # ==============================
+
             if response.status_code == 200:
 
                 result = response.json()
 
-                st.session_state.analysis_result = result
+                if "error" in result:
+
+                    st.error(
+                        result["error"]
+                    )
+
+                    st.stop()
+
+                st.session_state.analysis_result = (
+                    result
+                )
+
+            # ==============================
+            # BACKEND ERROR
+            # ==============================
 
             else:
 
                 st.error(
-                    f"Backend Error: {response.text}"
+                    f"Backend Error: "
+                    f"{response.text}"
                 )
 
                 st.stop()
 
     # ======================================
-    # LOAD STORED ANALYSIS
+    # LOAD ANALYSIS RESULT
     # ======================================
 
     stored_result = st.session_state.get(
+
         "analysis_result",
+
         {}
+
     )
 
     # ======================================
-    # SHOW RESULTS ONLY IF AVAILABLE
+    # SHOW RESULTS
     # ======================================
 
     if stored_result:
 
         resolved_ticker = stored_result.get(
+
             "resolved_ticker",
+
             ticker
+
         )
 
         st.success(
-            f"Detected Ticker: {resolved_ticker}"
+            f"Detected Ticker: "
+            f"{resolved_ticker}"
         )
 
         analysis = stored_result.get(
+
             "analysis",
-            {}
+
+            ""
+
         )
 
         metrics = stored_result.get(
+
             "metrics",
+
             {}
+
         )
 
         ai_scores = stored_result.get(
+
             "ai_scores",
+
             {}
+
         )
 
         multi_agent = stored_result.get(
+
             "multi_agent",
+
             {}
+
         )
 
-        st.success("Analysis Complete")
+        st.success(
+            "Analysis Complete"
+        )
 
         # ======================================
         # KPI DASHBOARD
         # ======================================
 
-        st.subheader("📊 Financial KPI Dashboard")
+        st.subheader(
+            "📊 Financial KPI Dashboard"
+        )
 
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3, col4 = (
+            st.columns(4)
+        )
 
         with col1:
 
@@ -235,7 +288,9 @@ if page == "Stock Analysis":
 
                 f"${round(metrics.get('marketCap', 0)/1e12, 2)}T"
 
-                if metrics.get("marketCap")
+                if metrics.get(
+                    "marketCap"
+                )
 
                 else "N/A"
 
@@ -247,9 +302,17 @@ if page == "Stock Analysis":
 
                 "Trailing P/E",
 
-                round(metrics.get("trailingPE", 0), 2)
+                round(
+                    metrics.get(
+                        "trailingPE",
+                        0
+                    ),
+                    2
+                )
 
-                if metrics.get("trailingPE")
+                if metrics.get(
+                    "trailingPE"
+                )
 
                 else "N/A"
 
@@ -263,7 +326,9 @@ if page == "Stock Analysis":
 
                 f"{round(metrics.get('profitMargins', 0)*100, 2)}%"
 
-                if metrics.get("profitMargins")
+                if metrics.get(
+                    "profitMargins"
+                )
 
                 else "N/A"
 
@@ -277,7 +342,9 @@ if page == "Stock Analysis":
 
                 f"{round(metrics.get('revenueGrowth', 0)*100, 2)}%"
 
-                if metrics.get("revenueGrowth")
+                if metrics.get(
+                    "revenueGrowth"
+                )
 
                 else "N/A"
 
@@ -286,32 +353,44 @@ if page == "Stock Analysis":
         st.divider()
 
         # ======================================
-        # STOCK CHART
+        # STOCK PRICE CHART
         # ======================================
 
-        st.subheader("📈 Stock Price Trend")
+        st.subheader(
+            "📈 Stock Price Trend"
+        )
 
         chart_response = requests.get(
 
-            f"{BASE_API_URL}/stock-chart/{resolved_ticker}"
+            f"{BASE_API_URL}/stock-chart/"
+            f"{resolved_ticker}"
 
         )
 
         if chart_response.status_code == 200:
 
-            chart_data = chart_response.json()
+            chart_data = (
+                chart_response.json()
+            )
 
-            if isinstance(chart_data, list):
+            if isinstance(
+                chart_data,
+                list
+            ):
 
-                df = pd.DataFrame(chart_data)
+                df = pd.DataFrame(
+                    chart_data
+                )
 
                 if (
 
                     not df.empty
 
-                    and "Date" in df.columns
+                    and "Date"
+                    in df.columns
 
-                    and "Close" in df.columns
+                    and "Close"
+                    in df.columns
 
                 ):
 
@@ -323,7 +402,11 @@ if page == "Stock Analysis":
 
                         y="Close",
 
-                        title=f"{resolved_ticker} Stock Price (6 Months)"
+                        title=(
+                            f"{resolved_ticker} "
+                            f"Stock Price "
+                            f"(6 Months)"
+                        )
 
                     )
 
@@ -338,13 +421,19 @@ if page == "Stock Analysis":
                 else:
 
                     st.warning(
-                        "Stock chart data unavailable."
+
+                        "Stock chart "
+                        "data unavailable."
+
                     )
 
             else:
 
                 st.warning(
-                    "Invalid stock chart data."
+
+                    "Invalid stock "
+                    "chart data."
+
                 )
 
         else:
@@ -352,6 +441,180 @@ if page == "Stock Analysis":
             st.warning(
                 "Unable to load stock chart."
             )
+
+        st.divider()
+
+        # ======================================
+        # EXECUTIVE AI SUMMARY
+        # ======================================
+
+        st.subheader(
+            "🧠 Executive AI Summary"
+        )
+
+        st.markdown(
+            analysis
+        )
+
+        st.divider()
+
+        # ======================================
+        # AI INVESTMENT SCORES
+        # ======================================
+
+        st.subheader(
+            "🤖 AI Investment Scores"
+        )
+
+        score_col1, score_col2, score_col3 = (
+            st.columns(3)
+        )
+
+        with score_col1:
+
+            st.metric(
+
+                "Growth Score",
+
+                ai_scores.get(
+                    "growth_score",
+                    "N/A"
+                )
+
+            )
+
+        with score_col2:
+
+            st.metric(
+
+                "Risk Score",
+
+                ai_scores.get(
+                    "risk_score",
+                    "N/A"
+                )
+
+            )
+
+        with score_col3:
+
+            st.metric(
+
+                "Investment Rating",
+
+                ai_scores.get(
+                    "investment_rating",
+                    "N/A"
+                )
+
+            )
+
+        st.divider()
+
+        # ======================================
+        # MULTI AGENT AI ANALYSIS
+        # ======================================
+
+        st.subheader(
+            "👥 Multi-Agent AI Analysis"
+        )
+
+        if isinstance(
+            multi_agent,
+            dict
+        ):
+
+            for role, insight in (
+                multi_agent.items()
+            ):
+
+                with st.expander(
+                    f"{role}"
+                ):
+
+                    st.markdown(
+                        insight
+                    )
+
+        else:
+
+            st.warning(
+                "Multi-agent analysis unavailable."
+            )
+
+        st.divider()
+
+        # ======================================
+        # EXECUTIVE REPORT
+        # ======================================
+
+        st.subheader(
+            "📄 Executive AI Report"
+        )
+
+        if st.button(
+            "Generate Executive AI Report"
+        ):
+
+            with st.spinner(
+                "Generating AI report..."
+            ):
+
+                report_response = requests.post(
+
+                    f"{BASE_API_URL}/generate-report",
+
+                    json={
+
+                        "ticker": resolved_ticker,
+
+                        "analysis": analysis
+
+                    }
+
+                )
+
+                if (
+                    report_response.status_code
+                    == 200
+                ):
+
+                    report_result = (
+
+                        report_response.json()
+
+                    )
+
+                    st.success(
+
+                        "Executive AI Report Generated"
+
+                    )
+
+                    st.json(
+                        report_result
+                    )
+
+                    download_url = (
+
+                        f"{BASE_API_URL}"
+                        f"/download-report/"
+                        f"{resolved_ticker}"
+
+                    )
+
+                    st.markdown(
+
+                        f"[📥 Download Executive Report]"
+                        f"({download_url})"
+
+                    )
+
+                else:
+
+                    st.error(
+                        "Report generation failed."
+                    )
 # ==========================================
 # ANNUAL REPORT QA PAGE
 # ==========================================
